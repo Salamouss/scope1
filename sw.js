@@ -1,5 +1,5 @@
 /* Offline shell for the scope notebook. Bump V on every release. */
-const V = 'scope-v2-1';
+const V = 'scope-v3-1';
 const FONTS = 'scope-fonts';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
