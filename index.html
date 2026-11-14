@@ -1683,7 +1683,7 @@ function appShell(){
   if(IN_CLAUDE) return;
   var standalone=false;
   try{standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;}catch(e){}
-  if('serviceWorker' in navigator&&location.protocol==='https:'){
+  if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')){
     navigator.serviceWorker.register('sw.js').catch(function(){});
   }
   if(standalone) return;
