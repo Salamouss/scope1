@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>محدِّد نطاق المشاريع</title>
+<meta name="theme-color" content="#11497C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="نطاق المشروع">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;family=Kufam:wght@500;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  /* layout: blueprint title block with live totals, five sheet tabs, one ruled column of rows, totals bar pinned to the bottom edge; the offer sheet ends in a drawing-style document */
+  --paper:#EEF2F5;
+  --ink:#10243A;
+  --muted:#55677A;
+  --line:#C3D0DB;
+  --blue:#11497C;
+  --plate:#11497C;
+  --plate-ink:#EAF2F9;
+  --ok:#1D7A4C;
+  --warn:#9A5B06;
+  --crit:#B3261E;
+  --display:'Kufam','IBM Plex Sans Arabic',Tahoma,sans-serif;
+  --body:'IBM Plex Sans Arabic','Segoe UI',Tahoma,'Noto Sans Arabic',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0B1620;--ink:#E3ECF4;--muted:#93A5B7;--line:#24384B;--blue:#74B4EC;
+    --plate:#123E68;--plate-ink:#E6F0F9;--ok:#5CC592;--warn:#E3A84A;--crit:#F2877F;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0B1620;--ink:#E3ECF4;--muted:#93A5B7;--line:#24384B;--blue:#74B4EC;
+  --plate:#123E68;--plate-ink:#E6F0F9;--ok:#5CC592;--warn:#E3A84A;--crit:#F2877F;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+[data-env="claude"] .webonly{display:none!important}
+html{height:100%;-webkit-text-size-adjust:100%;scroll-padding-top:60px}
+body{
+  margin:0;min-height:100%;display:flex;flex-direction:column;
+  background-color:var(--paper);color:var(--ink);
+  font:400 15px/1.75 var(--body);
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--line) 26%,transparent) 1px,transparent 1px),
+    linear-gradient(90deg,color-mix(in srgb,var(--line) 26%,transparent) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.wrap{width:100%;max-width:760px;margin-inline:auto;padding-inline:16px}
+.ltr{direction:ltr;unicode-bidi:isolate;font-family:var(--mono)}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.4}
+p{margin:0}
+
+/* title block */
+.plate{
+  background-color:var(--plate);color:var(--plate-ink);color-scheme:dark;padding-block:18px 16px;
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--plate-ink) 9%,transparent) 1px,transparent 1px),
+    linear-gradient(90deg,color-mix(in srgb,var(--plate-ink) 9%,transparent) 1px,transparent 1px);
+  background-size:16px 16px;
+}
+.plate-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px}
+.eyebrow{display:block;font:500 12px/1.5 var(--display);opacity:.8}
+.plate h1{font-size:30px;font-weight:700;line-height:1.3}
+.sheet-no{display:inline-flex;align-items:center;gap:7px;font:500 12px/1 var(--display);border:1px solid color-mix(in srgb,var(--plate-ink) 50%,var(--plate));padding:7px 9px;white-space:nowrap;background:var(--plate)}
+.sheet-no .ltr{font:500 13px/1 var(--mono)}
+.tb{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:color-mix(in srgb,var(--plate-ink) 50%,var(--plate));border:1px solid color-mix(in srgb,var(--plate-ink) 50%,var(--plate))}
+.tb>div{background:var(--plate);padding:7px 10px 8px;min-width:0}
+.tb .wide{grid-column:1/-1}
+.tb label,.tb .k{display:block;font:500 11.5px/1.6 var(--display);opacity:.78}
+.tb .v{display:block;font-size:16px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+.tb .v.n{font:500 18px/1.45 var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.tb .rk{display:flex;align-items:center;gap:8px;min-height:26px}
+.tb input{display:block;width:100%;border:0;background:transparent;padding:0;font-size:16px;font-weight:600;line-height:1.5;border-radius:0}
+.tb input::placeholder{color:inherit;opacity:.5;font-weight:400}
+.bump{animation:bump .22s ease-out}
+@keyframes bump{from{opacity:.35;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.rkb{display:inline-flex;align-items:flex-end;gap:3px}
+.rkb i{display:block;width:5px;background:currentColor;opacity:.28}
+.rkb i:nth-child(1){height:7px}.rkb i:nth-child(2){height:10px}.rkb i:nth-child(3){height:13px}
+.r1 .rkb i:nth-child(1),.r2 .rkb i:nth-child(-n+2),.r3 .rkb i{opacity:1}
+
+/* sheet tabs */
+.steps{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:2px solid var(--ink)}
+.steps .wrap{display:grid;grid-template-columns:repeat(5,1fr);padding-inline:8px}
+.steps button{border:0;border-bottom:3px solid transparent;margin-bottom:-2px;background:none;padding:8px 2px 7px;display:grid;justify-items:center;gap:1px;color:var(--muted);font-size:13px;font-weight:500;line-height:1.45}
+.steps b{font:500 11px/1.2 var(--mono)}
+.steps button[aria-current="step"]{color:var(--ink);border-bottom-color:var(--blue);font-weight:700}
+
+/* panels */
+main{flex:1;padding-block:20px 30px}
+h2{font-size:22px;font-weight:700}
+.h2b{margin-top:34px}
+.lead{color:var(--muted);font-size:14px;margin:4px 0 14px;max-width:62ch}
+h3{font-size:16px;font-weight:700;display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:22px 0 5px;border-bottom:1.5px solid var(--ink)}
+.cnt{font:500 12px/1 var(--mono);color:var(--muted);white-space:nowrap}
+.hint{color:var(--muted);font-size:13.5px;margin:10px 0}
+.note{border-inline-start:3px solid var(--warn);background:color-mix(in srgb,var(--warn) 10%,transparent);padding:9px 12px;margin:0 0 14px;font-size:14px}
+.lbl{display:block;font:700 14px/1.5 var(--display);margin:22px 0 6px}
+
+/* controls */
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);padding:8px 16px;font-weight:600;font-size:14px;border-radius:2px;line-height:1.5}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.sm{padding:4px 12px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.lnk{border:0;background:none;padding:6px 2px;color:var(--blue);font-size:13px;font-weight:500;text-decoration:underline;text-underline-offset:3px;text-align:start}
+.lnk.danger{color:var(--crit)}
+.fld{display:block;width:100%;border:0;border-bottom:1.5px solid var(--ink);background:transparent;padding:6px 2px;border-radius:0;font-size:16px}
+textarea.fld{border:1.5px solid var(--ink);padding:10px 12px;line-height:1.9;resize:vertical}
+.cb{appearance:none;-webkit-appearance:none;width:24px;height:24px;margin:1px 0 0;border:2px solid var(--ink);border-radius:2px;background:transparent;display:inline-grid;place-content:center;cursor:pointer;flex:none}
+.cb::after{content:"";width:12px;height:6px;border:solid var(--paper);border-width:0 0 2.5px 2.5px;transform:translateY(-1px) rotate(-45deg) scale(0);transition:transform .14s ease-out}
+.cb:checked{background:var(--blue);border-color:var(--blue)}
+.cb:checked::after{transform:translateY(-1px) rotate(-45deg) scale(1)}
+.cb:disabled{opacity:.55;cursor:default}
+.cb.sm{width:20px;height:20px;margin:0}
+.cb.sm::after{width:10px;height:5px}
+.seg{display:inline-grid;grid-auto-flow:column;border:1.5px solid var(--ink)}
+.seg button{border:0;border-inline-start:1px solid var(--line);background:transparent;padding:5px 12px;font-size:13px}
+.seg button:first-child{border-inline-start:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.box{border:1.5px solid var(--ink);margin:0 0 20px}
+.box>summary{cursor:pointer;padding:9px 12px;font:700 14px/1.5 var(--display);display:flex;align-items:center;gap:10px;list-style:none}
+.box>summary::-webkit-details-marker{display:none}
+.box>summary>span:first-child{flex:1}
+.box>summary::after{content:"+";font:500 17px/1 var(--mono)}
+.box[open]>summary::after{content:"\2212"}
+.box[open]>summary{border-bottom:1px solid var(--line)}
+.box .in{padding:4px 12px 12px}
+.tog{display:inline-flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap;cursor:pointer}
+
+/* sheet 1: types */
+.appbar{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1.5px dashed var(--blue);padding:9px 12px;margin-bottom:16px;font-size:13.5px}
+.fam{border-bottom:1px solid var(--line);padding:18px 0 4px;margin-bottom:10px;font-size:14px;color:var(--muted)}
+.types{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px}
+.type{position:relative;text-align:start;border:1px solid var(--line);background:var(--paper);padding:11px 12px 9px;display:grid;gap:1px;align-content:start;border-radius:2px}
+.type .n{font:700 16.5px/1.45 var(--display)}
+.type .e{font:400 12px/1.4 var(--mono);color:var(--muted);text-align:right}
+.type .b{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:4px}
+.type .c{font-size:12px;margin-top:5px}
+.type[aria-pressed="true"]{border-color:var(--blue);box-shadow:inset 0 0 0 1.5px var(--blue)}
+.type[aria-pressed="true"]::after{content:"";position:absolute;top:0;left:0;border:9px solid var(--blue);border-bottom-color:transparent;border-right-color:transparent}
+.srow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.sb{flex:1;min-width:0;display:grid}
+.sb b{font-weight:600;overflow-wrap:anywhere}
+.sb span{font-size:12.5px;color:var(--muted)}
+.srow.cur .sb b::after{content:" · مفتوح الآن";font-weight:400;color:var(--muted);font-size:12px}
+#newp{margin-top:12px}
+
+/* sheet 2: feature rows */
+.toolbar{display:flex;align-items:flex-end;gap:14px;margin-bottom:2px}
+.toolbar .fld{flex:1;min-width:0}
+.row{display:grid;grid-template-columns:26px minmax(0,1fr);column-gap:12px;row-gap:3px;padding:11px 0;padding-inline-start:9px;border-bottom:1px solid var(--line);border-inline-start:3px solid transparent;align-items:start}
+.row.l3{border-inline-start-color:var(--crit)}
+.nm{cursor:pointer;overflow-wrap:anywhere}
+.row.on .nm{font-weight:600}
+.en{font:400 12px/1.4 var(--mono);color:var(--muted);margin-inline-start:4px;white-space:nowrap}
+.core,.ph2{font:500 11px/1.6 var(--display);border:1px solid var(--line);padding:0 6px;margin-inline-start:6px;color:var(--muted);white-space:nowrap;font-weight:500}
+.ph2{border-color:var(--blue);color:var(--blue)}
+.meta,.det{grid-column:2}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:2px 14px}
+.lv{display:inline-flex;align-items:flex-end;gap:3px;font-size:12.5px;font-weight:600}
+.lv i{display:block;width:5px;background:var(--line)}
+.lv i:nth-child(1){height:6px}.lv i:nth-child(2){height:9px}.lv i:nth-child(3){height:12px}
+.lv span{margin-inline-start:4px;line-height:1}
+.l1 .lv{color:var(--ok)}.l1 .lv i:nth-child(1){background:var(--ok)}
+.l2 .lv{color:var(--warn)}.l2 .lv i:nth-child(-n+2){background:var(--warn)}
+.l3 .lv{color:var(--crit)}.l3 .lv i{background:var(--crit)}
+.dy{font-size:12.5px;color:var(--muted)}
+.dy .ltr{font:500 12.5px/1 var(--mono);color:var(--ink)}
+.more{border:0;background:none;padding:6px 2px;color:var(--blue);font-size:12.5px;font-weight:500;text-decoration:underline;text-underline-offset:3px}
+.meta .more:first-of-type{margin-inline-start:auto}
+.det{font-size:13.5px;display:grid;gap:9px;padding:4px 0 2px}
+.det .w{border-inline-start:3px solid var(--warn);background:color-mix(in srgb,var(--warn) 10%,transparent);padding:6px 10px}
+.det b{font:700 12.5px/1.6 var(--display)}
+.det .w b{color:var(--warn);margin-inline-end:4px}
+.det ul{margin:0;padding:0;list-style:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.chip{font:400 12px/1.6 var(--mono),var(--body);border:1px solid var(--line);padding:0 7px}
+.chip.new{border-color:var(--warn);color:var(--warn)}
+.cal{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:12.5px;color:var(--muted)}
+.cal input{width:62px;border:0;border-bottom:1.5px solid var(--ink);background:transparent;font:500 16px/1.4 var(--mono);text-align:center;padding:1px 2px;border-radius:0;color:var(--ink)}
+.cform{margin-top:28px;border:1px dashed var(--muted);padding:14px;display:grid;gap:10px}
+.cform .lbl{margin:0}
+.cg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cg label,.cg2 label,.setin>label{font-size:12.5px;color:var(--muted);display:grid;gap:2px}
+.cform .btn{justify-self:start}
+
+/* sheet 3: questions */
+.qrow{display:grid;grid-template-columns:26px minmax(0,1fr);column-gap:12px;padding:11px 0;padding-inline-start:12px;border-bottom:1px solid var(--line);align-items:start}
+.qt{display:block;font-weight:500}
+.qrow.on .qt{color:var(--muted)}
+.tag{font:500 11px/1.6 var(--display);border:1px solid var(--line);padding:0 6px;color:var(--muted);margin-inline-end:4px}
+.ans{display:block;width:100%;border:0;border-bottom:1px dashed var(--muted);background:transparent;padding:5px 2px;font-size:16px;border-radius:0;margin-top:2px}
+.ans:focus{outline:0;border-bottom:2px solid var(--blue)}
+
+/* sheet 4: tools and security */
+.trow{padding:11px 0;padding-inline-start:12px;border-bottom:1px solid var(--line);display:grid;gap:2px}
+.th{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tl{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-width:0}
+.tname{font:500 14.5px/1.6 var(--mono),var(--body);overflow-wrap:anywhere}
+.pill{font:500 11px/1.6 var(--display);color:var(--warn);border:1px solid var(--warn);padding:0 6px;white-space:nowrap}
+.trow:not(.new) .pill{display:none}
+.td{font-size:13.5px;max-width:65ch}
+.tw{font-size:12.5px;color:var(--muted)}
+.secg{padding:10px 0;padding-inline-start:12px;border-bottom:1px solid var(--line)}
+.secg h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.secg ul{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+.secg li{position:relative;padding-inline-start:17px;font-size:14px;max-width:68ch}
+.secg li::before{content:"";position:absolute;inset-inline-start:0;top:.66em;width:8px;height:8px;border:1.5px solid var(--ink)}
+
+/* sheet 5: the offer */
+.estg{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--ink);border:1.5px solid var(--ink)}
+.estg>div{background:var(--paper);padding:8px 10px 9px;min-width:0}
+.estg .wide{grid-column:1/-1}
+.estg .k{display:block;font:500 11.5px/1.6 var(--display);color:var(--muted)}
+.estg .v{display:block;font:500 21px/1.35 var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.estg .u{display:block;font-size:12.5px;color:var(--muted);line-height:1.6}
+.rline{display:inline-flex;align-items:center;gap:8px;font-size:16px}
+.r1 .rline{color:var(--ok)}.r2 .rline{color:var(--warn)}.r3 .rline{color:var(--crit)}
+.mg{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;margin-top:16px}
+.mg .lbl{margin:0}
+.cg2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.doc{border:1.5px solid var(--ink);background:var(--paper);margin-top:10px}
+.dochead{background:var(--plate);color:var(--plate-ink);padding:12px 14px 13px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.dochead h3{display:block;border:0;padding:0;font-size:20px}
+.dochead dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1px 14px;margin:8px 0 0;font-size:13.5px}
+.dochead dt{font:500 12px/1.9 var(--display);opacity:.75}
+.dochead dd{margin:0;overflow-wrap:anywhere}
+.dochead dd.ltr{text-align:right;font-size:13px}
+.docsec{padding:10px 14px 11px;border-top:1px solid var(--line)}
+.docsec:first-of-type{border-top:0}
+.docsec h4{font-size:14.5px;font-weight:700;margin-bottom:3px}
+.docsec .g{font:500 12.5px/1.7 var(--display);color:var(--muted);margin-top:6px}
+.docsec ul{margin:0;padding:0;list-style:none}
+.docsec li{position:relative;padding-inline-start:14px;font-size:14px}
+.docsec li::before{content:"";position:absolute;inset-inline-start:0;top:.86em;width:6px;height:1.5px;background:var(--ink)}
+.docsec p{font-size:14px}
+.docsec .nt{color:var(--muted);font-size:13px}
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+#copybuf{margin-top:10px;font-size:14px;min-height:200px}
+#setbox{margin-top:26px}
+.setin{display:grid;gap:13px;padding-top:10px}
+.setin .cg2{margin-top:0}
+.bk{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* bottom bar */
+.bar{position:sticky;bottom:0;z-index:5;background:var(--paper);border-top:2px solid var(--ink)}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:9px}
+.tot{display:grid;line-height:1.5;min-width:0}
+.tot b{font-weight:600;font-size:14px}
+.tot span{font-size:13px;color:var(--muted)}
+.nav{display:flex;gap:8px}
+
+@media (min-width:640px){
+  body{font-size:16px}
+  .tb{grid-template-columns:repeat(4,1fr)}
+  .tb .wide{grid-column:span 2}
+  .plate h1{font-size:36px}
+  .types{grid-template-columns:repeat(3,1fr)}
+  .steps button{font-size:14px}
+  .estg{grid-template-columns:repeat(4,1fr)}
+  .estg>div{grid-column:span 2}
+  .estg .wide{grid-column:1/-1}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media print{
+  :root,:root[data-theme="dark"],:root:not([data-theme="light"]){
+    --paper:#FFFFFF;--ink:#111111;--muted:#444444;--line:#BBBBBB;--blue:#11497C;--plate:#11497C;--plate-ink:#FFFFFF;color-scheme:light;
+  }
+  body{background-image:none}
+  .plate,.steps,.bar,.noprint,.panel:not(#p-sum){display:none!important}
+  main{padding:0}
+  .doc{margin:0}
+}
+</style>
+</head>
+<body>
+
+<header class="plate">
+  <div class="wrap">
+    <div class="plate-top">
+      <div>
+        <span class="eyebrow">دفتر مقابلة العميل</span>
+        <h1>نطاق المشروع</h1>
+      </div>
+      <div class="sheet-no"><span>لوحة</span><span class="ltr" id="h-sheet">1 / 5</span></div>
+    </div>
+    <div class="tb">
+      <div class="wide"><label for="client">العميل</label><input id="client" type="text" placeholder="اسم العميل أو الشركة" autocomplete="off" maxlength="80"></div>
+      <div><span class="k">النوع</span><span class="v" id="h-type"></span></div>
+      <div><label for="date">تاريخ المقابلة</label><input id="date" type="date"></div>
+      <div><span class="k">المميزات</span><span class="v n ltr" id="h-n">0</span></div>
+      <div><span class="k">أيام العمل</span><span class="v n ltr" id="h-d">0</span></div>
+      <div><span class="k">المخاطرة</span><span class="v rk" id="h-r"></span></div>
+      <div><span class="k">أدوات للتعلّم</span><span class="v n" id="h-k">0</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="steps" aria-label="لوحات الدفتر">
+  <div class="wrap">
+    <button type="button" id="s-type" data-go="type"><b>1</b>النوع</button>
+    <button type="button" id="s-feat" data-go="feat"><b>2</b>المميزات</button>
+    <button type="button" id="s-q" data-go="q"><b>3</b>الأسئلة</button>
+    <button type="button" id="s-tools" data-go="tools"><b>4</b>الأدوات</button>
+    <button type="button" id="s-sum" data-go="sum"><b>5</b>العرض</button>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section class="panel" id="p-type" aria-labelledby="t-type">
+    <div class="appbar webonly" id="appbar" hidden>
+      <p id="app-t"></p>
+      <button type="button" class="btn sm" id="install" hidden>ثبّت التطبيق</button>
+    </div>
+    <details class="box" id="savedbox">
+      <summary><span>مشاريعي المحفوظة</span><span class="cnt ltr" id="saved-n">0</span></summary>
+      <div class="in">
+        <div id="saved"></div>
+        <button type="button" class="btn ghost sm" id="newp">مشروع جديد</button>
+      </div>
+    </details>
+    <h2 id="t-type">ما نوع المشروع؟</h2>
+    <p class="lead">اختر النوع. المميزات الأساسية تُؤشَّر تلقائيًا وتعدّلها في اللوحة التالية.</p>
+    <input class="fld" id="tf" type="search" placeholder="ابحث: متجر، حجز، فوترة" aria-label="ابحث عن نوع" autocomplete="off">
+    <div id="types"></div>
+    <p class="hint" id="tempty" hidden>لا نوع بهذا الاسم. اختر تطبيق مخصص من فئة المنصات وأضف مميزاتك.</p>
+  </section>
+
+  <section class="panel" id="p-feat" aria-labelledby="t-feat" hidden>
+    <h2 id="t-feat">ماذا يريد العميل؟</h2>
+    <p class="lead">أشّر على ما يطلبه. عند التأشير تظهر تنبيهات الميزة وأسئلتها، ومنها تنقلها إلى مرحلة ثانية أو تضبط مدتها حسب تجربتك.</p>
+    <p class="note" id="tnote" hidden></p>
+    <div class="toolbar">
+      <input class="fld" id="ff" type="search" placeholder="ابحث في المميزات" aria-label="ابحث في المميزات" autocomplete="off">
+      <label class="tog" for="fonly"><input type="checkbox" class="cb sm" id="fonly">المختارة فقط</label>
+    </div>
+    <div id="feats"></div>
+    <p class="hint" id="fempty" hidden>لا ميزة مطابقة في هذا النوع. أضفها من الخانة أدناه.</p>
+    <form class="cform" id="cform" novalidate>
+      <label class="lbl" for="c-n">ميزة غير موجودة في القائمة</label>
+      <input class="fld" id="c-n" type="text" placeholder="مثال: ربط مع برنامج المحاسبة" maxlength="80" autocomplete="off">
+      <div class="cg">
+        <label for="c-lv">الصعوبة
+          <select class="fld" id="c-lv"><option value="1">سهل</option><option value="2" selected>متوسط</option><option value="3">صعب</option></select>
+        </label>
+        <label for="c-a">أقل مدة بالأيام
+          <input class="fld" id="c-a" type="number" min="0.25" step="0.25" value="1" inputmode="decimal">
+        </label>
+        <label for="c-b">أقصى مدة بالأيام
+          <input class="fld" id="c-b" type="number" min="0.25" step="0.25" value="3" inputmode="decimal">
+        </label>
+      </div>
+      <button type="submit" class="btn ghost">أضف إلى القائمة</button>
+      <p class="hint" id="cmsg" role="status" aria-live="polite" hidden></p>
+    </form>
+  </section>
+
+  <section class="panel" id="p-q" aria-labelledby="t-q" hidden>
+    <h2 id="t-q">أسئلة تُطرح في المقابلة</h2>
+    <p class="lead">اكتب جواب العميل تحت السؤال. ما تؤشّر عليه بلا جواب يظهر في عرض العميل كنقطة تنتظر ردّه.</p>
+    <div id="qs"></div>
+    <label class="lbl" for="notes">ملاحظات المقابلة</label>
+    <textarea class="fld" id="notes" rows="4" placeholder="ما قيل في المقابلة ولا يدخل في القوائم"></textarea>
+  </section>
+
+  <section class="panel" id="p-tools" aria-labelledby="t-tools" hidden>
+    <h2 id="t-tools">ما الذي تحتاجه لتبنيه؟</h2>
+    <p class="lead">القائمة تتغير مع المميزات المختارة. أشّر على ما تعرفه، والباقي يُحسب للتعلّم ويرفع مؤشر المخاطرة.</p>
+    <div id="tools"></div>
+    <h2 class="h2b">قائمة الأمان</h2>
+    <p class="lead">بنود تخص ما اخترته فقط. راجعها أثناء البناء وقبل التسليم.</p>
+    <div id="sec"></div>
+  </section>
+
+  <section class="panel" id="p-sum" aria-labelledby="t-sum" hidden>
+    <h2 id="t-sum" class="noprint">العرض</h2>
+    <p class="lead noprint">الأرقام تخص المرحلة الأولى. ما تنقله إلى المرحلة الثانية يخرج من المدة والسعر.</p>
+    <div class="estg noprint" id="estg"></div>
+    <p class="hint noprint" id="mhint" hidden></p>
+    <div class="mg noprint">
+      <span class="lbl" id="mg-l">هامش الأمان على المدة</span>
+      <div class="seg" id="seg" role="group" aria-labelledby="mg-l"></div>
+    </div>
+    <div class="cg2 noprint">
+      <label for="price">السعر المتفق عليه (دج)
+        <input class="fld" id="price" type="number" min="0" step="1000" inputmode="numeric" placeholder="يظهر في عرض العميل">
+      </label>
+      <label for="status">حالة المشروع
+        <select class="fld" id="status"></select>
+      </label>
+    </div>
+    <div class="mg noprint">
+      <span class="lbl" id="dc-l">الوثيقة</span>
+      <div class="seg" id="docseg" role="group" aria-labelledby="dc-l">
+        <button type="button" data-doc="client">عرض للعميل</button>
+        <button type="button" data-doc="internal">ملخص داخلي</button>
+      </div>
+    </div>
+    <article class="doc" id="doc"></article>
+    <div class="acts noprint">
+      <button type="button" class="btn" id="copy">انسخ النص</button>
+      <button type="button" class="btn ghost webonly" id="print">اطبع أو احفظ PDF</button>
+      <button type="button" class="btn ghost" id="save">احفظ المشروع</button>
+    </div>
+    <p class="hint noprint" id="msg" role="status" aria-live="polite"></p>
+    <textarea class="fld noprint" id="copybuf" rows="8" readonly hidden aria-label="نص الوثيقة للنسخ اليدوي"></textarea>
+    <details class="box noprint" id="setbox">
+      <summary><span>إعداداتي</span><span class="cnt" id="set-s"></span></summary>
+      <div class="in setin">
+        <label for="me-n">اسمك أو اسم نشاطك
+          <input class="fld" id="me-n" type="text" maxlength="80" autocomplete="name">
+        </label>
+        <div class="cg2">
+          <label for="me-p">الهاتف
+            <input class="fld" id="me-p" type="tel" dir="ltr" maxlength="30" autocomplete="tel">
+          </label>
+          <label for="me-e">البريد
+            <input class="fld" id="me-e" type="email" dir="ltr" maxlength="80" autocomplete="email">
+          </label>
+        </div>
+        <div class="cg2">
+          <label for="rate">سعر يوم العمل (دج)
+            <input class="fld" id="rate" type="number" min="0" step="500" inputmode="numeric">
+          </label>
+          <label for="cap">أيام العمل في الأسبوع
+            <input class="fld" id="cap" type="number" min="1" max="7" step="1" inputmode="numeric">
+          </label>
+        </div>
+        <label for="terms">شروط الدفع
+          <textarea class="fld" id="terms" rows="2" maxlength="400"></textarea>
+        </label>
+        <div class="bk webonly">
+          <button type="button" class="btn ghost sm" id="exp">حمّل نسخة احتياطية</button>
+          <label class="btn ghost sm" for="imp">استرجع من ملف</label>
+          <input type="file" id="imp" accept="application/json,.json" hidden>
+        </div>
+        <p class="hint" id="set-h">الاسم والهاتف يظهران في رأس عرض العميل. سعر اليوم لا يظهر للعميل.</p>
+      </div>
+    </details>
+  </section>
+</main>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="tot"><b id="b-n"></b><span id="b-d"></span></div>
+    <div class="nav">
+      <button type="button" class="btn ghost" id="prev">السابق</button>
+      <button type="button" class="btn" id="next">التالي</button>
+    </div>
+  </div>
+</div>
+
+<noscript><p class="wrap">هذه الأداة تحتاج JavaScript لتعمل.</p></noscript>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- library ---------- */
+
+var LV=['','سهل','متوسط','صعب'];
+var TG=['الواجهة','البيانات والنماذج','الخادم وقاعدة البيانات','المصادقة والصلاحيات','خدمات خارجية','الملفات والتقارير','النشر والتشغيل'];
+
+var TOOLS={
+  react:{g:0,n:'React + Vite',d:'React مكتبة بناء الواجهات و Vite يشغّل المشروع ويبنيه. يناسب اللوحات والأنظمة الداخلية.'},
+  next:{g:0,n:'Next.js',d:'إطار فوق React يجهّز الصفحات في الخادم. اختره حين يهمّ الظهور في Google وسرعة أول تحميل.'},
+  tailwind:{g:0,n:'Tailwind CSS',d:'تنسيق بأصناف جاهزة داخل JSX.'},
+  shadcn:{g:0,n:'shadcn/ui',d:'مكوّنات جاهزة (نوافذ، قوائم، نماذج) تُنسخ إلى مشروعك وتُعدَّل بـ Tailwind.'},
+  motion:{g:0,n:'Motion',d:'مكتبة الحركات والانتقالات، كانت تسمى Framer Motion.'},
+  i18n:{g:0,n:'next-intl / react-i18next',d:'ترجمة الواجهة ودعم الاتجاه من اليمين إلى اليسار.'},
+  calendar:{g:0,n:'FullCalendar / react-big-calendar',d:'عرض المواعيد والحجوزات في تقويم يومي وأسبوعي.'},
+  editor:{g:0,n:'Tiptap',d:'محرر نصوص غني لكتابة المقالات والدروس.'},
+  dnd:{g:0,n:'dnd kit',d:'سحب وإفلات للبطاقات والقوائم.'},
+  rhf:{g:1,n:'React Hook Form + Zod',d:'إدارة النماذج والتحقق من المدخلات بمخطط واحد يُستعمل في الواجهة والخادم.'},
+  query:{g:1,n:'TanStack Query',d:'جلب بيانات الخادم وتخزينها مؤقتًا وتحديثها.'},
+  zustand:{g:1,n:'Zustand',d:'حالة مشتركة خفيفة بين الصفحات، مثل محتوى السلة.'},
+  table:{g:1,n:'TanStack Table',d:'جداول بفرز وفلترة وترقيم صفحات.'},
+  charts:{g:1,n:'Recharts',d:'رسوم بيانية لـ React.'},
+  supabase:{g:2,n:'Supabase',d:'قاعدة PostgreSQL مع مصادقة وتخزين ملفات في خدمة واحدة. أقصر طريق لمبرمج واجهات يحتاج خادمًا.'},
+  postgres:{g:2,n:'PostgreSQL + SQL',d:'تصميم الجداول والعلاقات والقيود والـ transactions. هنا تُحسم صحة البيانات.'},
+  backend:{g:2,n:'Route Handlers / Edge Functions',d:'كود يعمل في الخادم لكل ما فيه مفاتيح سرية أو حساب مبالغ.'},
+  cron:{g:2,n:'Vercel Cron / pg_cron',d:'تشغيل كود في وقت محدد، مثل تذكير أو تقرير دوري.'},
+  realtime:{g:2,n:'Supabase Realtime',d:'وصول التغييرات إلى المتصفح فورًا دون إعادة تحميل.'},
+  offline:{g:2,n:'Service Worker + IndexedDB',d:'تخزين محلي في المتصفح ومزامنة عند رجوع الاتصال.'},
+  fts:{g:2,n:'PostgreSQL Full-Text Search / Meilisearch',d:'بحث نصي سريع في آلاف السجلات.'},
+  auth:{g:3,n:'Supabase Auth / Better Auth',d:'تسجيل الدخول والجلسات. الأول إن كان المشروع على Supabase، والثاني مع Next.js وقاعدة بياناتك. لا تبدأ مشروعًا جديدًا بـ Auth.js.'},
+  rls:{g:3,n:'Row Level Security',d:'قواعد داخل قاعدة البيانات تحدد من يقرأ ويعدّل كل صف. هي التي تفرض الصلاحيات فعلًا.'},
+  chargily:{g:4,n:'Chargily Pay',d:'بوابة دفع جزائرية لبطاقتي الذهبية و CIB، لها حزمة Node.js ووضع تجريبي. لا تقبل Visa و Mastercard حاليًا.'},
+  billing:{g:4,n:'Chargily Pay / Stripe / Paddle',d:'تحصيل الاشتراكات. Chargily للبطاقات الجزائرية. Stripe و Paddle للدفع الدولي ولهما شروط قبول، فتحقق قبل الوعد.'},
+  delivapi:{g:4,n:'Yalidine API',d:'إنشاء الطرود، أسعار التوصيل، البوردورو وحالة الطرد. المفاتيح (API ID و Token) من لوحة المطوّر عند الشركة. ZR Express و Maystro و NOEST وشركات Ecotrack لكل منها API مختلف.'},
+  geo:{g:4,n:'قائمة الولايات والبلديات',d:'خذها من API شركة التوصيل أو من مصدر محدَّث. التقسيم الجديد 69 ولاية و 1541 بلدية، وقوائم كثيرة ما زالت بـ 58.'},
+  sheets:{g:4,n:'Google Sheets API / Apps Script',d:'إرسال الطلبات إلى جدول يتابعه فريق العميل.'},
+  pixel:{g:4,n:'Meta Pixel + Conversions API',d:'قياس نتائج الإعلانات. الفكرة نفسها عند TikTok.'},
+  ga:{g:4,n:'Google Analytics 4',d:'إحصائيات الزوار ومصادرهم.'},
+  email:{g:4,n:'Resend / SMTP',d:'إرسال البريد الآلي، مثل تأكيد الطلب واسترجاع كلمة المرور.'},
+  mailing:{g:4,n:'Brevo / Mailchimp',d:'قوائم بريدية ورسائل دورية للمشتركين.'},
+  sms:{g:4,n:'مزوّد SMS',d:'رسائل نصية. اسأل عن السعر والتغطية للأرقام الجزائرية قبل أن تَعِد.'},
+  waapi:{g:4,n:'WhatsApp Business Platform',d:'إرسال رسائل واتساب آليًا عبر API رسمي من Meta. يحتاج حساب أعمال وقوالب رسائل معتمدة.'},
+  push:{g:4,n:'Web Push / Firebase Cloud Messaging',d:'إشعارات تصل للهاتف والمتصفح والموقع مغلق.'},
+  maps:{g:4,n:'Google Maps Embed / Leaflet',d:'خريطة موقع أو عرض نقاط كثيرة على خريطة.'},
+  cms:{g:4,n:'Sanity / Payload / Strapi',d:'لوحة محتوى جاهزة يعدّل منها العميل النصوص والصور.'},
+  video:{g:4,n:'Mux / Bunny Stream',d:'استضافة فيديو الدروس وبثه بروابط محمية.'},
+  gcal:{g:4,n:'Google Calendar API',d:'مزامنة المواعيد مع تقويم العميل عبر OAuth.'},
+  storage:{g:5,n:'Supabase Storage / Cloudinary',d:'تخزين الصور والملفات وتصغيرها.'},
+  xlsx:{g:5,n:'ExcelJS / SheetJS',d:'قراءة ملفات Excel وكتابتها.'},
+  pdf:{g:5,n:'@react-pdf/renderer / pdf-lib',d:'توليد ملفات PDF للفواتير والوصولات. جرّب الخط العربي مبكرًا.'},
+  qr:{g:5,n:'qrcode',d:'توليد رموز QR للقوائم والتذاكر والبطاقات.'},
+  barcode:{g:5,n:'قارئ باركود USB / ZXing',d:'القارئ USB يكتب الرقم كلوحة مفاتيح ولا يحتاج مكتبة. القراءة بكاميرا الهاتف تحتاج مكتبة.'},
+  thermal:{g:5,n:'طباعة حرارية ESC/POS',d:'وصل الكاشير على طابعة حرارية. من المتصفح تمر عبر نافذة الطباعة أو WebUSB.'},
+  vercel:{g:6,n:'Vercel',d:'استضافة الواجهة ونشر تلقائي من GitHub.'},
+  git:{g:6,n:'Git + GitHub',d:'حفظ نسخ الكود. أساسي في كل مشروع.'},
+  domain:{g:6,n:'الدومين و DNS',d:'شراء الدومين وربطه بالاستضافة والبريد.'},
+  sentry:{g:6,n:'Sentry',d:'تنبيه عند وقوع أخطاء عند المستخدمين.'}
+};
+var KEYED=['delivapi','chargily','billing','sheets','email','mailing','sms','waapi','push','gcal','pixel','video'];
+
+var F={};
+function f(id,n,en,lv,a,b,t,o){
+  o=o||{};
+  F[id]={id:id,n:n,en:en,lv:lv,a:a,b:b,t:t?t.split(' '):[],q:o.q||[],w:o.w||'',c:o.c||'',s:o.s?o.s.split(' '):[]};
+}
+
+/* shared building blocks */
+f('responsive','تصميم متجاوب للهاتف','Responsive',1,1,2,'tailwind');
+f('i18n','لغتان أو أكثر (عربية، فرنسية)','i18n + RTL',2,2,4,'i18n',{q:['أي لغات بالضبط؟ ومن يترجم المحتوى؟'],w:'كل لغة تضاعف المحتوى المنتظر من العميل وتضاعف اختبار الواجهة.',c:'ترجمة النصوص إلى كل لغة'});
+f('seo','تهيئة الظهور في Google','SEO',2,1,3,'next',{q:['من أين يأتي الزوار، من Google أم من الإعلانات؟'],w:'وعدك هو التهيئة التقنية. الترتيب في النتائج لا يضمنه أحد.'});
+f('hosting','الدومين والاستضافة والنشر','Domain & hosting',1,0.5,1,'vercel domain git',{q:['من يملك الدومين؟ ومن يدفع التجديد السنوي؟'],w:'سجّل الدومين والحسابات باسم العميل.',c:'دومين باسمكم، أو معلومات الدومين الحالي'});
+f('analytics','إحصائيات الزوار','Analytics',1,0.5,1,'ga');
+f('pixel','تتبع الإعلانات (فيسبوك، تيك توك)','Pixel + CAPI',2,0.5,2,'pixel backend',{q:['على أي منصة تعلنون؟ وهل حساب الإعلانات جاهز؟'],w:'Pixel في المتصفح سهل. Conversions API يحتاج كودًا في الخادم.',c:'صلاحية على حساب الإعلانات'});
+f('contact','نموذج تواصل','Contact form',1,0.5,1,'rhf email',{q:['إلى أي بريد تصل الرسائل؟'],s:'public'});
+f('whatsapp','زر واتساب واتصال','WhatsApp button',1,0.25,0.5,'');
+f('map','خريطة الموقع','Map',1,0.25,0.5,'maps');
+f('cms','محتوى يعدّله العميل بنفسه','CMS',2,2,5,'cms',{q:['ما الذي ستعدّلونه بأنفسكم؟ وكم مرة في الشهر؟'],w:'إن كان التعديل نادرًا فتعديلك أنت بمقابل أرخص للعميل من بناء لوحة.'});
+f('blog','مدونة أو أخبار','Blog',2,1,3,'cms next',{q:['من سيكتب المقالات؟ وكم مقالًا في الشهر؟']});
+f('auth','تسجيل الدخول','Authentication',2,1,3,'auth',{q:['الدخول بالبريد أم برقم الهاتف؟ ومن ينشئ الحسابات؟'],w:'الدخول برقم الهاتف يحتاج SMS مدفوعًا.',s:'auth'});
+f('roles','أدوار وصلاحيات','Roles & permissions',3,2,5,'auth rls',{q:['كم دورًا؟ وماذا يرى ويعدّل كل دور؟'],w:'الصلاحيات تُفرض في الخادم وقاعدة البيانات. إخفاء الزر في الواجهة لا يحمي شيئًا.',s:'roles auth'});
+f('email','إشعارات بالبريد','Transactional email',2,1,2,'email backend',{q:['أي أحداث ترسل بريدًا؟ وبأي لغة؟']});
+f('sms','إشعارات SMS','SMS',2,1,3,'sms backend',{q:['من يدفع تكلفة الرسائل؟'],w:'تكلفة شهرية على العميل وحساب لدى مزوّد.',c:'حساب لدى مزوّد SMS'});
+f('wanotif','إشعارات واتساب آلية','WhatsApp API',3,3,6,'waapi backend',{q:['هل يكفي زر يفتح واتساب، أم تريدون رسائل تُرسل وحدها؟'],w:'تمر عبر API رسمي من Meta: حساب أعمال، قوالب رسائل معتمدة، وتكلفة على الرسائل. زر واتساب العادي لا يحتاج شيئًا من هذا.',c:'حساب WhatsApp Business موثق لدى Meta',s:'keys'});
+f('push','إشعارات تصل للهاتف','Push notifications',3,2,5,'push backend',{w:'على iPhone تعمل بعد تثبيت الموقع على الشاشة الرئيسية فقط. اسأل عن هواتف المستخدمين.',s:'keys'});
+f('chat','محادثة داخل الموقع بين المستخدمين','In-app chat',3,4,8,'realtime postgres',{q:['هل يكفي التواصل عبر واتساب أو الهاتف؟'],w:'المحادثة تجر معها إشعارات وإشرافًا وتبليغًا عن الإساءة.',s:'auth'});
+f('export','تصدير Excel و PDF','Export',2,1,3,'xlsx pdf',{q:['أي تقارير تُصدَّر بالضبط؟ وبأي شكل؟']});
+f('import','استيراد من Excel','Import',2,1,3,'xlsx',{q:['هل عندكم ملف حالي؟ أرسلوا لي عيّنة.'],w:'ملفات العميل القديمة فوضوية دائمًا. اطلب عيّنة قبل التسعير.',c:'ملف البيانات الحالي أو عيّنة منه'});
+f('search','بحث وفلترة','Search & filters',2,1,3,'query');
+f('upload','رفع صور وملفات','File upload',2,1,2,'storage',{s:'upload'});
+f('audit','سجل العمليات: من فعل ماذا ومتى','Audit log',2,1,3,'postgres');
+f('backup','نسخ احتياطي لقاعدة البيانات','Backups',1,0.5,1,'supabase',{w:'تأكد أن خطة الاستضافة تشمل نسخًا يومية، وجرّب الاسترجاع مرة قبل التسليم.'});
+f('monitoring','مراقبة الأخطاء والتوقف','Monitoring',1,0.5,1,'sentry');
+f('offline','العمل بدون إنترنت','Offline / PWA',3,4,10,'offline',{q:['هل ينقطع الإنترنت فعلًا في مكان العمل؟ كم مرة؟'],w:'المزامنة بعد رجوع الاتصال من أصعب ما في الويب. لا تَعِد بها في المقابلة.'});
+f('realtime','تحديث فوري بين المستخدمين','Realtime',3,2,5,'realtime',{q:['هل يكفي أن تتحدث الصفحة كل دقيقة؟']});
+f('mobileapp','تطبيق هاتف (Android و iOS)','Mobile app',3,20,45,'',{q:['ما الذي يفعله التطبيق ولا يفعله موقع متجاوب؟'],w:'مشروع قائم بذاته. سعّره منفصلًا ولا تضفه كميزة.'});
+f('handover','تدريب العميل والتسليم','Handover',1,0.5,1,'',{q:['من سيستعمل النظام كل يوم؟']});
+f('darkmode','الوضع الداكن','Dark mode',1,0.5,1,'tailwind');
+f('dues','تتبع الدفعات والأقساط والمستحقات','Payments tracking',2,2,4,'postgres table',{q:['الدفع دفعة واحدة أم بالأقساط؟ ومن يسجّله؟'],s:'money'});
+f('docgen','وثائق PDF من قالب: عقد، شهادة، بطاقة','Document templates',2,1,3,'pdf',{q:['أرني الوثائق المستعملة الآن.'],c:'نماذج الوثائق الحالية'});
+
+/* e-commerce */
+f('products','صفحات المنتجات والتصنيفات','Catalog',2,3,5,'next tailwind supabase',{q:['كم منتجًا تقريبًا؟ ومن يجهّز الصور والأوصاف؟'],w:'تأخر الصور والأوصاف أول سبب لتأخر التسليم. حدّد موعد استلامها.',c:'صور المنتجات وأوصافها وأسعارها'});
+f('variants','متغيرات المنتج: مقاس ولون','Variants',3,2,4,'postgres',{q:['هل لكل مقاس ولون سعر ومخزون خاص؟'],w:'تعقّد السلة والمخزون والطلبات معًا. احسمها قبل تصميم قاعدة البيانات.'});
+f('stock','تتبع الكمية المتوفرة','Stock count',2,1,3,'postgres',{q:['عند نفاد الكمية، يُخفى المنتج أم يبقى للطلب المسبق؟']});
+f('reviews','تقييمات ومراجعات','Reviews',2,1,3,'supabase',{q:['من يوافق على التقييم قبل نشره؟'],s:'public'});
+f('wishlist','قائمة المفضلة','Wishlist',1,0.5,1.5,'zustand');
+f('cart','سلة المشتريات','Cart',2,1,3,'zustand');
+f('checkout','إتمام الطلب بالدفع عند الاستلام','Checkout + COD',2,2,4,'rhf backend geo',{q:['ما الحقول المطلوبة من الزبون؟'],w:'احسب المجموع وسعر التوصيل في الخادم. الأرقام القادمة من المتصفح يمكن تغييرها.',s:'public pii'});
+f('guest','طلب سريع بدون حساب','Guest order',1,0.5,1.5,'rhf');
+f('epay','دفع إلكتروني بالذهبية و CIB','Online payment',3,3,7,'chargily backend',{q:['هل عندكم سجل تجاري وحساب تاجر لدى بوابة الدفع؟'],w:'فتح حساب التاجر بيد العميل ومدته خارج يدك. اشترط جاهزيته قبل تحديد موعد.',c:'حساب تاجر مفعّل لدى بوابة الدفع',s:'pay'});
+f('coupons','كوبونات وتخفيضات','Coupons',2,1,3,'postgres backend',{q:['أي أنواع التخفيض تريدون: نسبة، مبلغ ثابت، توصيل مجاني؟']});
+f('invoice','فاتورة أو وصل PDF','Invoice PDF',2,1,3,'pdf',{q:['ما البيانات الواجب ظهورها في الفاتورة؟']});
+f('upsell','عروض الكمية ومنتجات مكمّلة','Bundles & upsell',2,1,3,'postgres');
+f('shipfees','سعر التوصيل حسب الولاية','Shipping rates',2,1,2,'geo postgres',{q:['من يحدد أسعار التوصيل؟ وهل يختلف المنزل عن المكتب؟'],w:'التقسيم الجديد 69 ولاية. اعتمد القائمة التي تعمل بها شركة التوصيل.',c:'جدول أسعار التوصيل لكل ولاية'});
+f('delivery','ربط API شركة التوصيل','Delivery API',3,3,7,'delivapi backend',{q:['مع أي شركة توصيل تتعاملون؟ هل أحصل على مفاتيح API وحساب للتجربة؟'],w:'لكل شركة API مختلف ولا يُستدعى من المتصفح. لا تحدد مدة قبل تجربة المفاتيح.',c:'مفاتيح API وحساب للتجربة من شركة التوصيل',s:'keys'});
+f('stopdesk','التوصيل إلى المكتب','Stop desk',2,1,2,'delivapi');
+f('tracking','تتبع الطلب للزبون','Order tracking',2,1,3,'delivapi backend');
+f('returns','إدارة المرتجعات','Returns',2,1,3,'postgres',{q:['من يتحمل تكلفة الإرجاع؟ وكيف يعود المنتج إلى المخزون؟']});
+f('accounts','حسابات الزبائن وسجل طلباتهم','Customer accounts',2,2,4,'auth rls',{q:['هل يحتاج الزبون حسابًا فعلًا أم يكفيه الطلب السريع؟'],s:'auth pii'});
+f('adminprod','إدارة المنتجات من لوحة','Product admin',2,2,4,'shadcn rhf storage auth',{s:'admin upload auth'});
+f('adminord','إدارة الطلبات من لوحة','Order admin',2,2,4,'table auth supabase',{s:'admin auth'});
+f('confirm','حالات الطلب وتأكيده هاتفيًا','Confirmation flow',2,1,3,'postgres table',{q:['ما حالات الطلب عندكم؟ جديد، مؤكد، لم يرد، ملغى؟']});
+f('salesstats','إحصائيات المبيعات','Sales dashboard',2,2,4,'charts',{q:['ما الأرقام الثلاثة التي تريد رؤيتها كل صباح؟']});
+f('sheetsync','إرسال الطلبات إلى Google Sheets','Sheets sync',2,0.5,2,'sheets backend',{q:['هل يتابع الفريق الطلبات في Sheets الآن؟'],c:'صلاحية على جدول Google Sheets',s:'keys'});
+f('antifake','الحد من الطلبات الوهمية والمكررة','Fake-order guard',2,1,2,'backend rhf',{q:['كم نسبة الطلبات الوهمية أو المكررة الآن؟'],s:'public'});
+
+/* landing page */
+f('lpsections','أقسام الصفحة: العرض، الصور، المزايا، الأسئلة','Page sections',1,1,2,'next tailwind',{q:['من يجهّز الصور والنصوص والفيديو؟ ومتى؟'],c:'صور المنتج ونصوصه وفيديو العرض'});
+f('lpform','نموذج الطلب داخل الصفحة','Order form',2,1,2,'rhf backend geo',{q:['ما حقول النموذج؟ الاسم، الهاتف، الولاية، البلدية؟','أين تُحفظ الطلبات، في Google Sheets أم في لوحة خاصة؟'],s:'public pii'});
+f('thanks','صفحة الشكر وتسجيل التحويل','Thank-you page',1,0.5,1,'pixel');
+f('offers','عروض الكمية وعدّاد تنازلي','Bundles & countdown',1,0.5,1.5,'');
+f('speed','سرعة التحميل وضغط الصور','Performance',2,0.5,2,'next',{w:'أغلب الزوار يأتون من الهاتف. صفحة بطيئة تخسر الزائر قبل أن يقرأ.'});
+f('multilp','قالب يتكرر لعدة منتجات','Reusable template',2,1,3,'cms',{q:['كم منتجًا تطلقون في الشهر؟']});
+
+/* company website */
+f('pages','الصفحات الأساسية: الرئيسية، من نحن، الخدمات، تواصل','Core pages',1,2,4,'next tailwind',{q:['هل النصوص والصور والشعار جاهزة؟'],c:'النصوص والصور والشعار'});
+f('gallery','معرض أعمال أو صور','Gallery',1,1,2,'storage',{c:'صور الأعمال'});
+f('testimonials','آراء العملاء والشركاء','Testimonials',1,0.25,0.5,'');
+f('quote','طلب عرض سعر','Quote request',2,1,2,'rhf email',{q:['ما المعلومات التي تحتاجونها لتحضير العرض؟'],s:'public pii'});
+f('careers','طلبات التوظيف مع رفع السيرة','Careers form',2,1,2,'rhf storage email',{s:'public upload pii'});
+f('animations','حركات وانتقالات','Animations',2,1,3,'motion',{q:['أرني موقعًا تعجبك حركته.'],w:'تأخذ وقتًا أكثر مما تبدو. حدّد أين بالضبط.'});
+f('proemail','بريد مهني باسم الدومين','Business email',1,0.25,0.5,'domain',{q:['كم صندوق بريد تحتاجون؟'],w:'اشتراك شهري على العميل لدى مزوّد بريد.',c:'اشتراك بريد مهني'});
+
+/* portfolio */
+f('hero','تعريف شخصي ونبذة ومهارات','Intro & skills',1,1,2,'next tailwind',{c:'النبذة والصورة الشخصية'});
+f('works','صفحات الأعمال بصور وشرح','Case studies',1,1,3,'next storage',{q:['كم عملًا تعرض؟ وهل لكل عمل صفحة خاصة؟'],c:'صور الأعمال ووصف كل عمل'});
+f('cv','السيرة الذاتية للتحميل','CV download',1,0.25,0.5,'');
+
+/* blog and news */
+f('articles','مقالات بتصنيفات ووسوم','Articles',2,2,4,'next cms',{q:['كم مقالًا في الأسبوع؟ وكم كاتبًا؟']});
+f('editorflow','محرر مقالات ومسار مراجعة ونشر','Editorial workflow',2,2,5,'editor auth',{s:'auth admin'});
+f('share','معاينة جميلة عند المشاركة على الشبكات','Social previews',1,0.5,1,'next');
+f('comments','تعليقات مع إشراف','Comments',2,1,3,'supabase',{w:'التعليقات المفتوحة تجذب السبام. قرّر من يشرف عليها كل يوم.',s:'public'});
+f('newsletter','قائمة بريدية ورسائل دورية','Newsletter',2,1,3,'mailing',{s:'pii'});
+f('adslots','مساحات إعلانية','Ad slots',1,0.5,2,'',{q:['إعلانات Google أم بيع مباشر لمعلنين؟']});
+f('paywall','مقالات للمشتركين فقط','Paywall',3,3,6,'auth billing backend',{s:'pay auth'});
+
+/* event */
+f('eventpage','صفحة الحدث: البرنامج، المتحدثون، المكان','Event page',1,1,3,'next tailwind',{c:'البرنامج وصور المتحدثين ومعلومات المكان'});
+f('register','تسجيل المشاركين','Registration',2,1,3,'rhf backend email',{q:['ما المعلومات المطلوبة من المشارك؟ وهل العدد محدود؟'],s:'public pii'});
+f('seats','فئات التذاكر وعدد المقاعد','Ticket types',2,1,3,'postgres');
+f('tickets','تذاكر برمز QR','QR tickets',2,2,4,'qr pdf email');
+f('paidtickets','تذاكر مدفوعة إلكترونيًا','Paid tickets',3,3,7,'chargily backend',{c:'حساب تاجر مفعّل لدى بوابة الدفع',s:'pay'});
+f('checkin','فحص التذاكر عند الدخول','Check-in',2,2,4,'barcode auth',{w:'المسح يوم الحدث يحتاج إنترنت في المكان. جهّز قائمة مطبوعة كخطة بديلة.'});
+f('badges','شارات وشهادات مشاركة PDF','Badges',2,1,3,'pdf');
+
+/* marketplace */
+f('vendors','حسابات البائعين ولوحة لكل بائع','Vendor accounts',3,5,9,'auth rls shadcn',{q:['من يوافق على البائع الجديد؟ وما الوثائق المطلوبة منه؟'],s:'roles auth pii'});
+f('vendorprod','منتجات كل بائع ومراجعتها قبل النشر','Vendor products',2,3,5,'shadcn rhf storage',{s:'upload'});
+f('splitorder','طلب واحد من عدة بائعين','Split orders',3,4,8,'postgres backend',{q:['إذا طلب الزبون من بائعين، كم طردًا يصله؟ ومن يتكفل بالتوصيل؟'],w:'تقسيم الطلب يضاعف حالات التوصيل والإلغاء والإرجاع. ارسم المسار كاملًا قبل التسعير.'});
+f('commission','عمولة المنصة ومستحقات البائعين','Commissions',3,3,6,'postgres backend',{q:['كم العمولة؟ ومتى وكيف يُدفع للبائع؟'],w:'حسابات مالية بين أطراف. أي خطأ فيها نزاع مباشر. اتفق على القواعد كتابيًا.',s:'money'});
+f('payouts','كشف حساب البائع وتسوية الدفعات','Payouts',2,2,4,'table xlsx',{s:'money'});
+f('disputes','شكاوى ونزاعات بين الزبون والبائع','Disputes',2,2,4,'postgres',{q:['من يفصل في النزاع؟ وخلال كم يوم؟']});
+f('vendorrating','تقييم البائعين','Vendor ratings',2,1,3,'supabase',{s:'public'});
+
+/* restaurant */
+f('menu','قائمة الطعام بالأصناف والأسعار والصور','Menu',1,1,3,'next tailwind supabase',{q:['كم صنفًا؟ وهل تتغير القائمة أو الأسعار كثيرًا؟'],c:'القائمة والأسعار وصور الأطباق'});
+f('options','إضافات وخيارات الصنف: حجم، زيادات','Item options',2,1,3,'postgres');
+f('qrmenu','رمز QR لكل طاولة','QR codes',1,0.5,1,'qr');
+f('hours','أوقات العمل وإيقاف الطلب خارجها','Opening hours',1,0.5,1,'');
+f('tableorder','الطلب من الطاولة عبر الهاتف','Table ordering',3,3,6,'realtime backend',{q:['من يستقبل الطلب، المطبخ على شاشة أم النادل؟'],w:'يحتاج إنترنت مستقرًا داخل المطعم وشاشة في المطبخ. تأكد من الواقع قبل الوعد.',s:'public'});
+f('foodorder','طلب للتوصيل أو الاستلام','Delivery orders',2,2,4,'rhf backend zustand',{q:['من يوصل الطلبات؟ وما منطقة التوصيل وسعره؟'],s:'public pii'});
+f('tablebook','حجز طاولة','Table booking',2,1,3,'rhf email',{s:'public pii'});
+f('kitchen','شاشة المطبخ وحالات الطلب','Kitchen display',2,2,4,'realtime shadcn');
+
+/* listings and directory */
+f('listing','صفحات الإعلانات والتصنيفات','Listings',2,3,5,'next tailwind supabase',{q:['ما أنواع الإعلانات؟ وما حقول كل نوع؟']});
+f('postad','نشر الإعلانات من المستخدمين','Post an ad',2,2,4,'rhf storage auth',{s:'auth upload public'});
+f('expiry','مدة صلاحية الإعلان وتجديده','Expiry & renewal',2,1,2,'cron');
+f('moderation','مراجعة الإعلانات والتبليغ عنها','Moderation',2,2,4,'table shadcn',{q:['من يراجع الإعلانات؟ وكم إعلانًا متوقعًا في اليوم؟']});
+f('facets','فلاتر متقدمة: سعر، ولاية، نوع','Faceted search',2,2,4,'query fts geo');
+f('mapsearch','بحث وعرض على الخريطة','Map search',3,3,6,'maps',{w:'يحتاج إحداثيات لكل إعلان. قرّر من يدخلها وكيف.'});
+f('favs','حفظ الإعلانات وتنبيه بالجديد','Favourites & alerts',2,1,3,'postgres email');
+f('contactseller','التواصل مع صاحب الإعلان','Contact owner',1,0.5,2,'');
+f('promoted','إعلانات مميزة مدفوعة','Promoted ads',3,3,6,'chargily backend',{q:['كم سعر الإعلان المميز؟ وكم يبقى ظاهرًا؟'],c:'حساب تاجر مفعّل لدى بوابة الدفع',s:'pay'});
+
+/* inventory */
+f('items','الأصناف والتصنيفات ووحدات القياس','Items & units',2,2,4,'react shadcn supabase rhf',{q:['كم صنفًا؟ وما الوحدات: قطعة، كرتون، كيلوغرام؟']});
+f('moves','حركات المخزون: دخول، خروج، تعديل','Stock movements',3,3,6,'postgres backend',{q:['من يسجّل الدخول والخروج؟ وهل تحتاج الحركة موافقة؟'],w:'سجّل كل حركة في جدول ونفّذها داخل transaction. رقم الكمية وحده لا يفسّر الفروقات.'});
+f('warehouses','عدة مخازن والتحويل بينها','Multi-warehouse',3,3,7,'postgres',{q:['كم مخزنًا؟ وهل تنتقل البضاعة بينها؟']});
+f('suppliers','الموردون وأوامر الشراء','Suppliers & POs',2,3,6,'postgres rhf');
+f('pos','البيع ونقطة البيع','Sales / POS',3,5,10,'react postgres pdf',{q:['هل تبيعون من نفس النظام؟ وهل تطبعون وصلًا؟'],w:'نقطة البيع نظام كامل. إن لم تكن أساسية فأجّلها إلى مرحلة ثانية.'});
+f('barcode','قراءة الباركود وطباعة الملصقات','Barcode',2,2,5,'barcode pdf',{q:['هل على المنتجات باركود الآن؟ وأي أجهزة عندكم؟'],c:'أجهزة القراءة والطباعة للتجربة'});
+f('lowstock','تنبيه عند انخفاض المخزون','Low-stock alerts',1,0.5,2,'postgres email');
+f('count','الجرد وتسوية الفروقات','Stock count',2,2,4,'postgres xlsx');
+f('batches','تواريخ الصلاحية وأرقام الدفعات','Batches & expiry',3,3,6,'postgres',{q:['هل تتابعون تاريخ الصلاحية أو رقم الدفعة؟']});
+f('costing','تكلفة المخزون وهامش الربح','Costing',3,3,7,'postgres',{q:['كيف تُحسب التكلفة، بالمتوسط المرجَّح أم FIFO؟'],w:'موضوع محاسبي. اتفق على الطريقة كتابيًا مع محاسب العميل.',s:'money'});
+f('invreports','تقارير قيمة المخزون والحركات','Reports',2,2,4,'table charts xlsx',{q:['أي تقارير تُطبع أو تُرسل للإدارة؟']});
+f('bons','وصل الاستلام ووصل التسليم PDF','Receipts',2,1,3,'pdf',{q:['أرني نموذج الوصل المستعمل الآن.'],c:'نموذج الوصل الحالي'});
+
+/* point of sale */
+f('sale','شاشة البيع السريع','Sale screen',3,4,7,'react zustand postgres',{q:['كم عملية بيع في اليوم؟ وكم صنفًا في المحل؟'],w:'شاشة يعمل عليها البائع طول اليوم. السرعة ولوحة المفاتيح أهم من الشكل.'});
+f('receipt','طباعة الوصل','Receipt printing',2,1,3,'thermal',{q:['أي طابعة عندكم؟ وما مقاس الورق؟'],w:'الطباعة الحرارية من المتصفح فيها مفاجآت. جرّب على طابعة العميل قبل الالتزام.',c:'الطابعة للتجربة'});
+f('discounts','تخفيضات وأسعار خاصة','Discounts',2,1,3,'postgres');
+f('returnsale','إرجاع واستبدال','Returns',2,1,3,'postgres');
+f('credit','البيع بالدين ومتابعة الزبائن','Credit sales',2,2,4,'postgres table',{s:'money'});
+f('cashclose','فتح وغلق الصندوق وتقرير اليوم','Cash closing',2,2,4,'postgres pdf',{s:'money'});
+f('multipos','عدة صناديق أو بائعين في الوقت نفسه','Multi-register',3,2,5,'realtime postgres');
+
+/* invoicing */
+f('clients','قاعدة الزبائن','Customers',2,1,3,'react shadcn supabase rhf',{s:'pii'});
+f('catalog','قائمة المنتجات والخدمات بأسعارها','Price list',1,1,2,'shadcn');
+f('quotes','عروض الأسعار وتحويلها إلى فاتورة','Quotes',2,2,4,'rhf postgres pdf');
+f('invoices','الفواتير بترقيم متسلسل','Invoices',3,3,5,'postgres backend pdf',{q:['ما المعلومات القانونية في فاتورتكم؟ أرني فاتورة حالية.'],w:'الترقيم بلا ثغرات يُفرض في قاعدة البيانات. الفاتورة الصادرة لا تُعدَّل، تُلغى بفاتورة تصحيح.',c:'فاتورة حالية والمعلومات القانونية للمؤسسة',s:'money'});
+f('taxes','الرسوم في الفاتورة: TVA، طابع','Taxes',2,1,3,'postgres',{q:['ما الرسوم المطبقة عندكم؟ ومن محاسبكم؟'],w:'قواعد الضرائب تُؤخذ من محاسب العميل مكتوبة، لا من تخمينك.'});
+f('payments','تسجيل الدفعات والمبالغ الباقية','Payments',2,2,3,'postgres',{s:'money'});
+f('statements','كشف حساب الزبون والمتأخرات','Statements',2,1,3,'table pdf');
+f('recurring','فواتير دورية','Recurring invoices',2,2,4,'cron');
+
+/* CRM */
+f('contacts','جهات الاتصال والشركات','Contacts',2,2,3,'react shadcn supabase rhf',{s:'pii'});
+f('leadcapture','استقبال العملاء المحتملين من الموقع والإعلانات','Lead capture',2,1,3,'backend',{q:['من أين يأتي العملاء المحتملون الآن؟'],s:'public keys'});
+f('pipeline','مسار الصفقات بالسحب والإفلات','Pipeline',2,2,4,'dnd postgres',{q:['ما مراحل البيع عندكم من أول اتصال إلى الإغلاق؟']});
+f('activities','سجل المكالمات والملاحظات والمهام','Activities',2,2,4,'postgres');
+f('followups','تذكير بالمتابعة','Follow-ups',2,1,3,'cron email');
+f('assign','توزيع العملاء على فريق المبيعات','Assignment',2,1,3,'rls auth',{s:'roles'});
+f('crmreports','تقارير الأداء والتحويل','Sales reports',2,2,4,'charts table');
+
+/* HR */
+f('employees','ملفات الموظفين ووثائقهم','Employee files',2,2,4,'react shadcn supabase rhf storage',{s:'pii sens roles auth upload'});
+f('selfservice','فضاء الموظف: كشوف، طلبات، وثائق','Self-service',2,2,4,'auth rls');
+f('attendance','الحضور والغياب','Attendance',2,2,4,'postgres table',{q:['كيف يُسجَّل الحضور اليوم: ورقة، بصمة، يدويًا؟']});
+f('clockdevice','الربط مع جهاز البصمة','Clock device',3,3,7,'backend',{w:'لكل جهاز بصمة طريقته في إخراج البيانات. اطلب الجهاز أو ملف تصدير منه قبل الالتزام.',c:'جهاز البصمة أو ملف تصدير منه',s:'keys'});
+f('leave','طلبات العطل والموافقة عليها','Leave requests',2,2,4,'postgres email');
+f('shifts','جداول المناوبات','Shifts',2,2,4,'calendar postgres');
+f('payrollprep','تحضير عناصر الأجر الشهرية','Payroll prep',3,4,8,'postgres xlsx',{q:['من يحسب الأجور الآن؟ وبأي برنامج؟'],w:'حساب الأجور والاشتراكات مسؤولية قانونية. اكتفِ بتحضير العناصر وتصديرها لمحاسب العميل.',s:'money'});
+
+/* school */
+f('students','ملفات التلاميذ والأولياء','Student records',2,2,4,'react shadcn supabase rhf',{s:'pii roles auth'});
+f('enroll','التسجيل عبر الإنترنت','Online enrolment',2,1,3,'rhf storage email',{s:'public pii upload'});
+f('parentportal','فضاء الأولياء','Parent portal',2,2,4,'auth rls');
+f('classes','الأقسام والمواد والأساتذة','Classes & subjects',2,2,3,'postgres');
+f('timetable','جدول التوقيت','Timetable',3,3,6,'calendar postgres',{w:'توليد الجدول آليًا مسألة صعبة جدًا. اعرض إدخاله يدويًا مع كشف التعارضات.'});
+f('grades','النقاط والكشوف','Grades & reports',2,3,5,'postgres pdf table',{q:['كيف تُحسب المعدلات؟ أرني كشف نقاط حالي.'],c:'نموذج كشف النقاط'});
+f('absences','غيابات التلاميذ وإشعار الأولياء','Absences',2,2,3,'postgres sms');
+
+/* memberships */
+f('members','ملفات الأعضاء','Members',2,2,3,'react shadcn supabase rhf',{s:'pii auth'});
+f('memcheckin','تسجيل الدخول ببطاقة أو QR','Member check-in',2,2,4,'qr barcode');
+f('plans','أنواع الاشتراكات ومددها وأسعارها','Plans',1,1,2,'postgres');
+f('subs','تسجيل الاشتراك وتجديده وتاريخ انتهائه','Subscriptions',2,2,4,'postgres',{q:['ماذا يحدث عند انتهاء الاشتراك؟ وهل يُجمَّد عند الغياب؟']});
+f('expiring','تنبيه بالاشتراكات التي تنتهي','Expiry alerts',2,1,2,'cron sms');
+f('sessions','حصص وحجز الأماكن فيها','Class booking',3,3,6,'calendar postgres backend');
+f('coaches','المدربون وحصصهم','Coaches',2,1,3,'postgres');
+
+/* delivery operations */
+f('parcels','تسجيل الطرود وحالاتها','Parcels',2,3,5,'react shadcn supabase rhf table',{q:['ما حالات الطرد عندكم من الاستلام إلى التسليم أو الإرجاع؟']});
+f('bulkparcels','إدخال الطرود بالجملة من Excel','Bulk import',2,2,3,'xlsx');
+f('labels','طباعة البوردورو بباركود','Labels',2,2,4,'pdf barcode');
+f('trackpage','صفحة تتبع الطرد للزبون','Tracking page',1,1,2,'next');
+f('pricing','تسعيرة حسب الولاية والوزن','Rate card',2,2,3,'postgres geo',{c:'جدول التسعيرة الحالي'});
+f('dispatch','توزيع الطرود على السائقين والخطوط','Dispatch',3,3,6,'postgres dnd');
+f('driverapp','واجهة السائق على الهاتف','Driver view',3,4,8,'react offline',{w:'السائق يعمل في مناطق بتغطية ضعيفة. بدون وضع يعمل دون إنترنت تتعطل الواجهة.'});
+f('hubs','مكاتب ومراكز الفرز والتحويل بينها','Hubs & transfers',3,3,6,'postgres');
+f('returnsflow','مسار المرتجعات','Returns flow',2,2,4,'postgres');
+f('merchants','فضاء التاجر: طروده ومستحقاته','Merchant portal',2,3,5,'auth rls table',{s:'roles auth'});
+f('cod','تحصيل المبالغ وتسويتها مع التجار','COD settlement',3,4,7,'postgres backend xlsx',{q:['متى وكيف تُدفع المبالغ المحصلة للتجار؟'],w:'أموال التجار عند الشركة. كل فرق في الحساب نزاع. اتفق على قواعد التسوية كتابيًا.',s:'money'});
+f('publicapi','API للتجار لإنشاء الطرود','Merchant API',3,4,8,'backend',{w:'API عام يعني توثيقًا ومفاتيح وحدود استعمال ودعمًا للمطورين.',s:'keys'});
+
+/* dashboard */
+f('kpi','بطاقات الأرقام والرسوم البيانية','KPIs & charts',2,2,4,'react charts query',{q:['أي قرار ستتخذه بالنظر إلى هذه اللوحة؟ وما الأرقام الخمسة الأهم؟']});
+f('tables','جداول بفرز وفلترة وترقيم','Data tables',2,2,4,'table shadcn');
+f('datefilter','فلترة بالفترة ومقارنة بفترة سابقة','Date ranges',2,1,3,'query');
+f('datasource','الربط بمصدر البيانات','Data source',3,2,7,'backend postgres',{q:['أين البيانات الآن: قاعدة بيانات، برنامج آخر، ملفات Excel؟ وهل أحصل على وصول أو عيّنة؟'],w:'أكبر مجهول في المشروع. لا تسعّر قبل أن ترى البيانات بعينك.',c:'وصول إلى مصدر البيانات أو عيّنة منه',s:'keys'});
+f('crud','إدارة السجلات: إضافة، تعديل، حذف','CRUD',2,2,5,'shadcn rhf supabase',{q:['أي سجلات تُدار: زبائن، منتجات، موظفون؟']});
+f('schedreports','تقارير دورية بالبريد','Scheduled reports',2,2,4,'cron email pdf');
+f('alerts','تنبيه عند تجاوز حد','Alerts',2,1,3,'cron email');
+f('builder','منشئ تقارير حر','Report builder',3,6,12,'table charts',{w:'مشروع كامل وحده. اقترح تقارير ثابتة محددة مكانه.'});
+f('tenants','عدة شركات أو فروع ببيانات معزولة','Multi-tenant',3,3,8,'rls auth',{q:['هل يرى كل فرع بياناته فقط؟'],s:'roles auth'});
+
+/* booking */
+f('services','عرض الخدمات والأسعار والمدة','Services',1,1,2,'next tailwind supabase');
+f('slots','اختيار الموعد من الأوقات المتاحة','Slot booking',3,4,8,'calendar postgres backend',{q:['ما مدة الموعد؟ كم حجزًا في الوقت نفسه؟ وما أيام العطل؟'],w:'منع الحجز المزدوج يُفرض بقيد في قاعدة البيانات. أصعب مما يبدو.',s:'public pii'});
+f('bookconfirm','تأكيد الحجز بالبريد أو SMS','Confirmation',2,1,2,'email backend',{q:['بأي وسيلة يصل التأكيد للزبون؟']});
+f('reminders','تذكير قبل الموعد','Reminders',2,1,3,'cron sms',{w:'التذكير بـ SMS تكلفة على كل موعد.'});
+f('resched','إلغاء الموعد أو تغييره','Cancel / reschedule',2,1,3,'backend',{q:['حتى كم ساعة قبل الموعد يُسمح بالإلغاء؟']});
+f('admincal','تقويم المواعيد والحجوزات للإدارة','Admin calendar',2,2,4,'calendar auth',{s:'admin auth'});
+f('staffsched','جداول الموظفين وأوقات عملهم','Staff schedules',3,2,4,'postgres',{q:['هل يختار الزبون موظفًا معيّنًا؟']});
+f('deposit','عربون عند الحجز','Deposit',3,3,7,'chargily backend',{q:['هل يُسترجع العربون عند الإلغاء؟'],w:'نفس شروط الدفع الإلكتروني. حساب التاجر بيد العميل.',c:'حساب تاجر مفعّل لدى بوابة الدفع',s:'pay'});
+f('gcal','مزامنة مع Google Calendar','Calendar sync',3,2,5,'gcal backend',{c:'صلاحية على تقويم Google',s:'keys'});
+f('waitlist','قائمة انتظار','Waitlist',2,1,3,'postgres');
+
+/* rentals */
+f('units','عرض الوحدات: صور، مواصفات، سعر اليوم','Units',2,2,4,'next supabase storage',{c:'صور ومواصفات وأسعار كل وحدة'});
+f('fleet','حالة الوحدات: متاحة، محجوزة، في الصيانة','Unit status',2,1,3,'postgres table');
+f('seasonal','أسعار موسمية وتخفيض المدة الطويلة','Seasonal pricing',3,2,5,'postgres backend',{q:['هل يتغير السعر بالموسم وبمدة الكراء؟']});
+f('availability','التوفر بالتواريخ ومنع الحجز المتداخل','Availability',3,4,8,'calendar postgres backend',{w:'التداخل يُمنع بقيد في قاعدة البيانات. جرّب حالات الحدود: يوم خروج زبون هو يوم دخول غيره.'});
+f('bookreq','طلب حجز مع تأكيد من الإدارة','Booking request',2,2,3,'rhf email backend',{s:'public pii'});
+f('idcheck','رفع وثائق الزبون: رخصة، هوية','ID documents',2,1,2,'storage',{w:'وثائق الهوية بيانات حساسة. مساحة تخزين خاصة وروابط مؤقتة.',s:'upload pii sens'});
+
+/* travel agency */
+f('trips','عروض الرحلات: برنامج، أسعار، تواريخ','Trip offers',2,2,4,'next supabase storage',{c:'برامج الرحلات وأسعارها وصورها'});
+f('seatsleft','الأماكن المتبقية في كل رحلة','Seats left',2,1,2,'postgres');
+f('tripreq','طلب حجز أو استفسار عن عرض','Trip request',1,1,2,'rhf email',{s:'public pii'});
+f('travelers','ملفات المسافرين ووثائقهم','Traveller files',2,2,4,'postgres storage shadcn',{w:'جوازات السفر بيانات حساسة جدًا. صلاحيات صارمة وروابط مؤقتة للملفات.',s:'upload pii sens auth'});
+f('dossier','متابعة الملف: تأشيرة، تذكرة، فندق','File tracking',2,2,4,'postgres table',{q:['ما مراحل الملف من التسجيل إلى السفر؟']});
+f('rooming','توزيع الغرف وقوائم المجموعات','Rooming lists',2,2,4,'table xlsx');
+
+/* clinic */
+f('patients','ملف المريض: معلومات، سوابق، زيارات','Patient records',2,3,5,'react shadcn supabase rhf rls',{s:'pii sens roles auth'});
+f('visits','تسجيل الزيارة والتشخيص','Visits',2,2,4,'rhf postgres');
+f('medfiles','أرشفة التحاليل والأشعة','Medical files',2,1,3,'storage',{s:'upload pii sens'});
+f('waiting','قاعة الانتظار وترتيب مرضى اليوم','Waiting room',2,1,3,'realtime');
+f('prescription','وصفة طبية وشهادات PDF','Prescriptions',2,2,3,'pdf',{q:['أرني نموذج الوصفة المستعمل الآن.'],c:'نموذج الوصفة والشهادات'});
+f('fees','أتعاب الزيارات ومداخيل اليوم','Fees',2,1,3,'postgres charts',{s:'money'});
+
+/* SaaS */
+f('onboarding','التسجيل وإنشاء حساب الشركة','Onboarding',2,2,4,'auth rhf',{s:'auth'});
+f('orgs','فرق العمل ودعوة الأعضاء','Teams & invites',3,3,6,'auth rls',{s:'roles auth'});
+f('tiers','الخطط وحدود كل خطة','Plans & limits',2,2,4,'postgres backend',{q:['ما الخطط؟ وما الفرق بينها بالضبط؟']});
+f('billing','الاشتراك والدفع والتجديد','Billing',3,4,8,'billing backend',{q:['الزبائن داخل الجزائر أم خارجها؟ وبأي وسيلة يدفعون؟'],w:'تحقق من دعم البوابة للتجديد التلقائي قبل الوعد به. البديل دفع يدوي عند كل فترة.',s:'pay money'});
+f('trial','فترة تجريبية وانتهاؤها','Free trial',2,1,3,'cron postgres');
+f('usage','قياس الاستعمال وتطبيق الحدود','Usage limits',3,2,5,'postgres backend');
+f('landingsaas','صفحة التسويق والأسعار','Marketing site',1,2,3,'next tailwind');
+f('docs','مركز المساعدة','Help centre',1,1,3,'cms');
+f('superadmin','لوحة المالك: الحسابات، الاشتراكات، الدعم','Owner console',2,3,5,'table shadcn auth',{s:'admin auth'});
+f('apikeys','API ومفاتيح للزبائن','Customer API',3,4,8,'backend',{s:'keys'});
+
+/* e-learning */
+f('courses','الدورات والفصول والدروس','Courses',2,3,5,'next supabase editor',{c:'محتوى الدورات: فيديو، نصوص، ملفات'});
+f('videolessons','دروس فيديو محمية','Video lessons',3,3,6,'video backend',{q:['كم ساعة فيديو؟ وأين الفيديوهات الآن؟'],w:'لا تخزّن الفيديو في خادمك. خدمة بث متخصصة تحمي الرابط وتتحمل الضغط.',s:'keys'});
+f('quizzes','اختبارات وتصحيح آلي','Quizzes',2,3,5,'postgres rhf');
+f('live','حصص مباشرة','Live sessions',2,1,3,'',{w:'لا تبنِ البث بنفسك. اربط بـ Zoom أو Google Meet.'});
+f('progress','تقدم الطالب واستكمال الدروس','Progress',2,2,3,'postgres');
+f('discussion','أسئلة ونقاش تحت الدرس','Discussion',2,2,4,'supabase',{s:'public'});
+f('enrollpay','شراء الدورة وفتحها بعد الدفع','Paid enrolment',3,3,7,'chargily backend',{c:'حساب تاجر مفعّل لدى بوابة الدفع',s:'pay'});
+f('manualpay','تفعيل يدوي بعد إرسال وصل الدفع','Manual activation',2,1,3,'storage table',{q:['كيف يدفع الطلاب اليوم: CCP، بريدي موب، نقدًا؟'],s:'upload'});
+f('instructors','عدة أساتذة ولوحة لكل أستاذ','Instructors',3,3,6,'auth rls',{s:'roles auth'});
+
+var G=[
+  'ما الهدف من المشروع؟ وماذا يتغير عندكم إذا نجح؟',
+  'من صاحب القرار النهائي؟ ومع من أتواصل كل يوم؟',
+  'ما الميزانية التقريبية؟ وما الموعد الذي لا يحتمل التأخير؟',
+  'أرني موقعين أو نظامين يعجبانك، وواحدًا لا يعجبك.',
+  'من يجهّز المحتوى (نصوص، صور، شعار)؟ ومتى يكون جاهزًا؟',
+  'ما الأنظمة أو الملفات المستعملة الآن؟',
+  'ما الذي يدخل في المرحلة الأولى، وما الذي يُؤجَّل؟',
+  'بعد التسليم، هل تريدون صيانة شهرية؟ ومن يدفع الاستضافة؟',
+  'كيف يكون الدفع؟ تسبيق ثم دفعات عند كل مرحلة؟'
+];
+
+var FAM=[['sell','بيع وتسويق'],['content','تعريف ومحتوى'],['book','حجز وخدمات'],['ops','أنظمة داخلية'],['plat','منصات ومنتجات']];
+
+var TYPES=[
+  {id:'shop',fam:'sell',n:'متجر إلكتروني',en:'E-commerce',blurb:'كتالوج، سلة، طلب بالدفع عند الاستلام، لوحة للطلبات.',
+   note:'إن كان المتجر عاديًا بلا خصائص خاصة فمنصة جاهزة مثل WooCommerce أو Shopify أرخص للعميل وأسرع لك. قلها في المقابلة.',
+   base:'next tailwind supabase vercel git',
+   cats:[['الكتالوج','products variants search stock reviews wishlist'],['الطلب والدفع','cart checkout guest epay coupons invoice upsell'],['التوصيل','shipfees delivery stopdesk tracking returns'],['الزبائن','accounts email sms wanotif'],['لوحة الإدارة','adminprod adminord confirm salesstats roles export sheetsync'],['التسويق والقياس','pixel analytics seo antifake'],['الأساس','responsive hosting i18n backup handover']],
+   core:'products cart checkout shipfees adminprod adminord responsive hosting',
+   q:['كم طلبًا في اليوم الآن؟ ومن أين تأتي: فيسبوك، إنستغرام، الهاتف؟','مع أي شركة توصيل تتعاملون؟','كم منتجًا؟ وهل تتغير الأسعار كثيرًا؟','من يؤكد الطلبات هاتفيًا؟ وكم شخصًا؟']},
+  {id:'landing',fam:'sell',n:'صفحة منتج وطلب',en:'Landing page',blurb:'صفحة واحدة لمنتج واحد مع نموذج طلب، موجهة للإعلانات.',note:'',
+   base:'next tailwind vercel git',
+   cats:[['الصفحة','lpsections offers speed multilp'],['الطلب','lpform shipfees thanks antifake whatsapp'],['متابعة الطلبات','sheetsync adminord confirm delivery'],['القياس','pixel analytics'],['الأساس','responsive hosting']],
+   core:'lpsections lpform shipfees thanks pixel responsive hosting',
+   q:['ما المنتج وسعره؟ وهل الصور والفيديو جاهزة؟','على أي منصة تعلنون؟','أين تتابعون الطلبات الآن؟','كم صفحة منتج تحتاجون في الشهر؟']},
+  {id:'market',fam:'sell',n:'سوق متعدد البائعين',en:'Marketplace',blurb:'بائعون كثر، طلب واحد، عمولة للمنصة.',
+   note:'من أصعب أنواع المشاريع. اقترح البدء بمتجر لبائع واحد، ثم فتحه للبائعين في مرحلة ثانية.',
+   base:'next tailwind supabase postgres vercel git',
+   cats:[['البائعون','vendors vendorprod vendorrating payouts'],['الكتالوج والطلب','products search cart checkout splitorder epay'],['المال والنزاعات','commission disputes'],['التوصيل','shipfees delivery tracking'],['الإدارة والزبائن','adminord roles accounts chat email'],['الأساس','responsive hosting seo pixel backup']],
+   core:'vendors vendorprod products cart checkout splitorder commission adminord responsive hosting',
+   q:['كم بائعًا عند الانطلاق؟ وهل هم جاهزون فعلًا؟','من يستلم المال من الزبون، المنصة أم البائع مباشرة؟','من يتكفل بالتوصيل والمرتجعات؟','لماذا يترك البائع صفحته على فيسبوك ويبيع عندكم؟']},
+  {id:'resto',fam:'sell',n:'مطعم وطلبات',en:'Restaurant',blurb:'قائمة رقمية برمز QR، طلب من الطاولة أو للتوصيل.',note:'',
+   base:'next tailwind supabase vercel git',
+   cats:[['القائمة','menu options qrmenu hours'],['الطلب','tableorder foodorder tablebook epay'],['التشغيل','kitchen adminord salesstats wanotif push'],['الظهور','whatsapp map seo pixel i18n'],['الأساس','responsive hosting handover']],
+   core:'menu qrmenu hours whatsapp responsive hosting',
+   q:['ما الهدف الأول، قائمة رقمية فقط أم استقبال طلبات؟','كم طاولة؟ وهل الإنترنت متوفر للزبائن داخل المطعم؟','من يحدّث القائمة والأسعار؟','هل عندكم توصيل الآن؟ وكيف تستقبلون طلباته؟']},
+  {id:'listings',fam:'sell',n:'إعلانات ودليل',en:'Listings & directory',blurb:'عقارات، سيارات، وظائف أو دليل مهني: إعلانات ببحث وفلاتر.',
+   note:'قيمة موقع الإعلانات في عدد إعلاناته. اسأل من يملأ الموقع قبل أن يسأل الزوار.',
+   base:'next tailwind supabase postgres vercel git',
+   cats:[['الإعلانات','listing postad expiry moderation'],['البحث','facets mapsearch favs'],['التواصل والدخل','contactseller chat promoted'],['المستخدمون','auth roles'],['الظهور والأساس','seo analytics i18n responsive hosting backup']],
+   core:'listing postad moderation facets contactseller auth seo responsive hosting',
+   q:['من ينشر، أي زائر أم حسابات موثقة؟','من أين يأتي الدخل: إعلانات مميزة، اشتراكات، أم لا شيء الآن؟','كم إعلانًا عند الانطلاق؟ ومن يدخل المحتوى الأول؟','ما الولايات والتصنيفات المستهدفة؟']},
+
+  {id:'vitrine',fam:'content',n:'موقع تعريفي',en:'Company website',blurb:'تعريف بالشركة وخدماتها ووسائل التواصل معها.',note:'',
+   base:'next tailwind vercel git',
+   cats:[['الصفحات','pages gallery testimonials blog animations'],['التواصل','contact whatsapp map quote careers newsletter'],['المحتوى واللغات','cms i18n'],['الظهور والقياس','seo analytics'],['الأساس','responsive hosting proemail handover']],
+   core:'pages contact seo responsive hosting',
+   q:['من الزائر المستهدف؟ وماذا تريده أن يفعل: يتصل، يطلب عرض سعر، يزور المحل؟','هل الشعار والهوية البصرية جاهزان؟','بأي لغات يكون الموقع؟','هل عندكم دومين أو موقع قديم؟']},
+  {id:'portfolio',fam:'content',n:'بورتفوليو شخصي',en:'Portfolio',blurb:'تعريف بشخص وأعماله ووسيلة للتواصل معه.',note:'',
+   base:'next tailwind vercel git',
+   cats:[['المحتوى','hero works cv testimonials blog'],['التواصل','contact whatsapp'],['الشكل','animations darkmode i18n'],['الأساس','seo analytics cms responsive hosting']],
+   core:'hero works contact responsive hosting',
+   q:['من الجمهور: أصحاب عمل، عملاء، أم متابعون؟','ما الفعل المطلوب من الزائر: توظيف، طلب خدمة، تواصل؟','هل تحدّث الأعمال بنفسك؟ وكم مرة؟']},
+  {id:'blog',fam:'content',n:'مدونة أو موقع أخبار',en:'Blog & news',blurb:'مقالات، كتّاب، مراجعة ونشر، جمهور ودخل.',note:'',
+   base:'next tailwind vercel git',
+   cats:[['المحتوى','articles editorflow search share'],['الجمهور','comments newsletter'],['الدخل','adslots paywall'],['الفريق','roles'],['الظهور والأساس','seo speed analytics i18n responsive hosting backup']],
+   core:'articles editorflow seo share responsive hosting',
+   q:['من يكتب؟ ومن يراجع قبل النشر؟','هل تنقلون مقالات من موقع قديم؟ كم مقالًا؟','من أين يأتي الدخل؟','ما أهم مصدر للزوار: Google، فيسبوك، أم مباشر؟']},
+  {id:'event',fam:'content',n:'حدث وتسجيل',en:'Event',blurb:'صفحة حدث، تسجيل المشاركين، تذاكر ودخول.',
+   note:'موعد الحدث لا يتحرك. احسب المدة بالعكس من تاريخه واترك أسبوعًا للتجربة.',
+   base:'next tailwind supabase vercel git',
+   cats:[['الصفحة','eventpage map i18n'],['التسجيل','register seats tickets paidtickets'],['يوم الحدث','checkin badges'],['التواصل','email sms wanotif'],['الإدارة والأساس','export seo pixel analytics responsive hosting']],
+   core:'eventpage register email export responsive hosting',
+   q:['متى الحدث؟ وكم مشاركًا متوقعًا؟','التسجيل مجاني أم مدفوع؟ وكيف يُدفع؟','هل يتكرر الحدث كل سنة؟','من يدير التسجيل يوم الحدث؟ وبأي أجهزة؟']},
+
+  {id:'booking',fam:'book',n:'حجز مواعيد',en:'Appointments',blurb:'خدمات، أوقات متاحة، حجز وتذكير.',note:'',
+   base:'next tailwind supabase vercel git',
+   cats:[['الحجز','services slots resched waitlist deposit'],['الإشعارات','bookconfirm reminders wanotif'],['الإدارة','admincal staffsched gcal auth roles'],['الزبائن','accounts whatsapp map'],['الأساس','responsive hosting seo i18n analytics']],
+   core:'services slots bookconfirm admincal auth responsive hosting',
+   q:['كم موعدًا في اليوم؟ وكم موظفًا يقدم الخدمة؟','كيف يحجز الزبائن اليوم: هاتف، واتساب؟','ما نسبة من يحجز ولا يحضر؟','هل تريدون عربونًا لتأكيد الحجز؟']},
+  {id:'rental',fam:'book',n:'كراء وحجز بالأيام',en:'Rentals',blurb:'سيارات، شقق أو غرف: توفر بالتواريخ وطلب حجز.',note:'',
+   base:'next tailwind supabase postgres vercel git',
+   cats:[['العرض','units fleet seasonal'],['الحجز','availability bookreq deposit idcheck'],['الإدارة','admincal dues docgen auth roles'],['التواصل','whatsapp email wanotif map'],['الأساس','seo i18n responsive hosting backup']],
+   core:'units availability bookreq admincal auth responsive hosting',
+   q:['كم وحدة؟ وهل كلها من نفس النوع؟','كيف تُدار الحجوزات اليوم: دفتر، Excel، هاتف؟','هل يُدفع تسبيق عند الحجز؟ وكيف؟','ما شروط الإلغاء؟']},
+  {id:'travel',fam:'book',n:'وكالة سفر',en:'Travel agency',blurb:'عروض رحلات، طلبات حجز، ملفات المسافرين ودفعاتهم.',note:'',
+   base:'next tailwind supabase vercel git',
+   cats:[['العروض','trips seatsleft cms'],['الحجز والملفات','tripreq travelers dossier rooming'],['المال والوثائق','dues docgen export'],['التواصل','whatsapp wanotif sms pixel'],['الإدارة والأساس','auth roles seo i18n responsive hosting backup']],
+   core:'trips tripreq whatsapp seo responsive hosting',
+   q:['ما أهم المنتجات: عمرة، رحلات منظمة، تذاكر، تأشيرات؟','كيف تتابعون ملفات الزبائن والدفعات اليوم؟','كم ملفًا في الموسم؟ وكم موظفًا يعمل عليها؟','الموقع للتعريف والعروض فقط أم لإدارة الملفات أيضًا؟']},
+  {id:'clinic',fam:'book',n:'عيادة وملفات مرضى',en:'Clinic',blurb:'ملف المريض، الزيارات، المواعيد والوصفات.',
+   note:'ملفات المرضى بيانات صحية حساسة. لا تقبل المشروع بلا صلاحيات صارمة ونسخ احتياطي واتفاق مكتوب على مكان تخزين البيانات.',
+   base:'react tailwind shadcn supabase postgres vercel git',
+   cats:[['المرضى','patients visits medfiles search'],['المواعيد','admincal slots reminders waiting'],['الوثائق والمال','prescription fees export'],['الأمان','auth roles audit backup'],['التشغيل','offline handover']],
+   core:'patients visits admincal auth roles backup',
+   q:['كم طبيبًا ومساعدًا يستعمل النظام؟','هل يحجز المرضى عبر الإنترنت أم بالهاتف فقط؟','أين تُحفظ الملفات اليوم؟ وهل تُنقل إلى النظام؟','ماذا يحدث إذا انقطع الإنترنت وسط العمل؟']},
+
+  {id:'stock',fam:'ops',n:'إدارة مخزون',en:'Inventory',blurb:'أصناف، حركات دخول وخروج، جرد وتقارير.',
+   note:'اسأل أولًا إن كان برنامج جاهز يكفي العميل. البناء الخاص يستحق حين تكون طريقة عمله مختلفة فعلًا.',
+   base:'react tailwind shadcn supabase postgres vercel git',
+   cats:[['الأصناف','items search import barcode'],['الحركات','moves warehouses count batches lowstock'],['الشراء والبيع','suppliers pos bons costing'],['التقارير','invreports export'],['المستخدمون والأمان','auth roles audit backup'],['التشغيل','offline realtime mobileapp handover']],
+   core:'items moves auth backup',
+   q:['كيف تُدار المخازن اليوم: دفتر، Excel، برنامج؟','كم مستخدمًا في الوقت نفسه؟ ومن أي أجهزة؟','ما أكبر مشكلة الآن: ضياع، فروقات جرد، نفاد مفاجئ؟','هل يجب الربط مع برنامج المحاسبة أو الفوترة؟']},
+  {id:'pos',fam:'ops',n:'نقطة بيع',en:'Point of sale',blurb:'شاشة بيع سريعة، وصل، صندوق ومخزون.',
+   note:'برامج الكاشير الجاهزة كثيرة. البناء الخاص يستحق حين تكون للمحل طريقة عمل لا تغطيها.',
+   base:'react tailwind shadcn supabase postgres vercel git',
+   cats:[['البيع','sale receipt discounts returnsale credit'],['الصندوق','cashclose multipos'],['المخزون','items barcode moves lowstock suppliers import'],['التقارير','invreports export'],['الأمان والتشغيل','auth roles audit backup offline handover']],
+   core:'sale receipt cashclose items auth backup',
+   q:['ما نوع النشاط: مواد غذائية، ملابس، قطع غيار؟','هل يجب أن يعمل المحل إذا انقطع الإنترنت؟','ما الأجهزة: حاسوب، لوحة، قارئ باركود، طابعة؟','هل تبيعون بالدين؟']},
+  {id:'invoicing',fam:'ops',n:'فوترة وعروض أسعار',en:'Invoicing',blurb:'زبائن، عروض أسعار، فواتير ومتابعة التحصيل.',
+   note:'الفوترة لها جانب قانوني. اطلب من العميل أن يراجع محاسبه نموذج الفاتورة قبل التسليم.',
+   base:'react tailwind shadcn supabase postgres vercel git',
+   cats:[['الأساس','clients catalog quotes invoices taxes'],['التحصيل','payments statements recurring email'],['التقارير','kpi export'],['الأمان','auth roles audit backup'],['التشغيل','i18n import tenants handover']],
+   core:'clients catalog quotes invoices payments auth backup',
+   q:['كم فاتورة في الشهر؟ ومن يحررها؟','بأي لغة تصدر الفواتير؟','هل تحتاجون ربطًا مع المخزون أو المحاسبة؟','ما الذي ينقصكم في الطريقة الحالية؟']},
+  {id:'crm',fam:'ops',n:'إدارة العملاء',en:'CRM',blurb:'جهات اتصال، مسار صفقات، متابعات وتقارير بيع.',
+   note:'برامج CRM الجاهزة ناضجة. تحقق أن العميل يحتاج شيئًا خاصًا فعلًا قبل البناء.',
+   base:'react tailwind shadcn supabase vercel git',
+   cats:[['العملاء','contacts leadcapture import search'],['البيع','pipeline activities followups assign'],['التقارير','crmreports export'],['التواصل','email wanotif'],['الأمان والتشغيل','auth roles audit backup handover']],
+   core:'contacts pipeline activities auth backup',
+   q:['كم بائعًا يستعمل النظام؟','أين قائمة العملاء اليوم؟','ما الذي يضيع الآن: متابعات، معلومات، صفقات؟','ما التقرير الذي يطلبه المدير كل أسبوع؟']},
+  {id:'hr',fam:'ops',n:'موارد بشرية وحضور',en:'HR & attendance',blurb:'ملفات الموظفين، الحضور، العطل وتحضير الأجور.',note:'',
+   base:'react tailwind shadcn supabase postgres vercel git',
+   cats:[['الموظفون','employees import selfservice'],['الوقت','attendance clockdevice leave shifts'],['الأجور والوثائق','payrollprep docgen export'],['الأمان','auth roles audit backup'],['التشغيل','kpi tenants handover']],
+   core:'employees attendance leave auth roles backup',
+   q:['كم موظفًا؟ وكم موقع عمل؟','ما الذي يأخذ أكثر وقت من مسؤول الموارد البشرية اليوم؟','هل يوجد جهاز بصمة؟ ما نوعه؟','من يحق له رؤية الأجور؟']},
+  {id:'school',fam:'ops',n:'مدرسة أو مركز تكوين',en:'School',blurb:'تلاميذ، أقسام، نقاط، غيابات ورسوم.',note:'',
+   base:'react tailwind shadcn supabase postgres vercel git',
+   cats:[['التلاميذ','students enroll import parentportal'],['الدراسة','classes timetable grades absences'],['المال والوثائق','dues docgen export'],['التواصل','sms wanotif'],['الأمان والتشغيل','auth roles audit backup handover']],
+   core:'students classes grades dues auth roles backup',
+   q:['كم تلميذًا وكم قسمًا؟','ما الذي يُدار اليوم على الورق أو Excel؟','هل يتابع الأولياء عبر الإنترنت؟','من يدخل النقاط، الأساتذة أم الإدارة؟']},
+  {id:'gym',fam:'ops',n:'اشتراكات وأعضاء',en:'Memberships',blurb:'قاعة رياضة أو نادٍ: أعضاء، اشتراكات، حضور.',note:'',
+   base:'react tailwind shadcn supabase vercel git',
+   cats:[['الأعضاء','members import memcheckin docgen'],['الاشتراكات','plans subs expiring dues'],['الحصص','sessions coaches'],['التقارير والتواصل','kpi export sms wanotif'],['الأمان والتشغيل','auth roles backup offline handover']],
+   core:'members plans subs expiring auth backup',
+   q:['كم عضوًا نشطًا؟','كيف تتابعون الاشتراكات المنتهية اليوم؟','هل يدخل الأعضاء ببطاقة؟','من يسجّل الدفعات؟ وكم موظف استقبال؟']},
+  {id:'delivery',fam:'ops',n:'إدارة التوصيل',en:'Delivery ops',blurb:'طرود، سائقون، حالات، وتحصيل المبالغ.',
+   note:'نظام تشغيل شركة توصيل مشروع كبير. ابدأ بجزء واحد واضح، مثل تسجيل الطرود وتتبعها.',
+   base:'react tailwind shadcn supabase postgres vercel git',
+   cats:[['الطرود','parcels bulkparcels labels trackpage pricing'],['الميدان','dispatch driverapp hubs returnsflow push'],['التجار والمال','merchants cod publicapi'],['التواصل والتقارير','sms wanotif kpi export'],['الأمان والتشغيل','auth roles audit backup handover']],
+   core:'parcels labels trackpage pricing auth roles backup',
+   q:['كم طردًا في اليوم؟ وكم سائقًا ومكتبًا؟','ما البرنامج المستعمل الآن؟ وما الذي ينقصه؟','من يدخل الطرود، التاجر أم موظفو الشركة؟','كيف تُسوّى المبالغ مع التجار اليوم؟']},
+  {id:'dash',fam:'ops',n:'لوحة تحكم',en:'Dashboard',blurb:'أرقام ورسوم وجداول من بيانات العميل.',note:'',
+   base:'react tailwind shadcn supabase vercel git',
+   cats:[['العرض','kpi tables datefilter darkmode responsive'],['البيانات','datasource crud import realtime'],['التقارير','export schedreports alerts builder'],['المستخدمون والأمان','auth roles tenants audit backup'],['التشغيل','i18n handover']],
+   core:'kpi tables datasource auth',
+   q:['من سيشاهد اللوحة؟ وكم مرة في اليوم؟','أين البيانات الآن؟ ومن المسؤول عنها تقنيًا؟','هل تحتاجون الأرقام فورية أم تكفي مرة في اليوم؟','ما التقارير التي تُحضَّر يدويًا الآن وتأخذ وقتًا؟']},
+
+  {id:'saas',fam:'plat',n:'منتج SaaS باشتراكات',en:'SaaS product',blurb:'حسابات شركات، خطط، دفع دوري ولوحة مالك.',
+   note:'في SaaS العمل لا ينتهي عند التسليم. اتفق من البداية على من يشغّل المنتج ويدعم زبائنه بعد الانطلاق.',
+   base:'next tailwind shadcn supabase postgres vercel git',
+   cats:[['الحسابات','onboarding orgs tenants roles'],['الاشتراك','tiers billing trial usage'],['التسويق والدعم','landingsaas docs seo analytics email'],['التشغيل','superadmin monitoring audit backup apikeys i18n']],
+   core:'onboarding tenants tiers billing landingsaas superadmin backup monitoring',
+   q:['من الزبون المستهدف؟ وكم يدفع اليوم لحل نفس المشكلة؟','ما الوظيفة الواحدة التي لا يُطلق المنتج بدونها؟','من يدعم الزبائن بعد الانطلاق؟','هل جُرّبت الفكرة مع زبائن حقيقيين قبل البناء؟']},
+  {id:'lms',fam:'plat',n:'منصة دورات',en:'E-learning',blurb:'دورات ودروس فيديو، تسجيل ودفع، تقدم الطلاب.',note:'',
+   base:'next tailwind supabase postgres vercel git',
+   cats:[['المحتوى','courses videolessons quizzes live'],['الطلاب','auth progress discussion docgen reviews'],['البيع','enrollpay manualpay coupons'],['الأساتذة والإدارة','instructors roles kpi'],['الظهور والأساس','seo pixel email i18n responsive hosting backup']],
+   core:'courses videolessons auth progress manualpay responsive hosting backup',
+   q:['كم دورة عند الانطلاق؟ وهل المحتوى مسجَّل وجاهز؟','كيف يدفع الطلاب اليوم؟','أستاذ واحد أم منصة لعدة أساتذة؟','هل يهمكم منع مشاركة الحساب بين عدة أشخاص؟']},
+  {id:'custom',fam:'plat',n:'تطبيق مخصص',en:'Custom web app',blurb:'نوع غير موجود هنا. ابدأ من المكوّنات العامة وأضف مميزات العميل.',
+   note:'هذا النوع يعطيك المكوّنات المشتركة فقط. أضف مميزات العميل الخاصة من أسفل هذه اللوحة.',
+   base:'react tailwind shadcn supabase vercel git',
+   cats:[['البيانات','crud tables search import export upload'],['المستخدمون والأمان','auth roles audit backup monitoring'],['التواصل','email sms wanotif push chat'],['المال والوثائق','dues docgen epay'],['العرض','kpi darkmode responsive i18n'],['التشغيل','hosting realtime offline mobileapp handover']],
+   core:'crud auth responsive hosting',
+   q:['صف لي يوم عمل عادي: من يفعل ماذا وبأي ترتيب؟','ما الورقة أو الملف الذي سيعوّضه هذا النظام؟','كم مستخدمًا؟ ومن أي أجهزة؟','ما أهم ثلاث شاشات في رأيك؟']}
+];
+
+var SEC=[
+  {k:'base',n:'في كل مشروع',i:['HTTPS على كل الصفحات. Vercel يفعّله تلقائيًا.','المفاتيح السرية في متغيرات البيئة. لا تُكتب في الكود ولا تُرفع إلى GitHub.','كل مدخل يُفحص في الخادم بـ Zod، حتى لو فُحص في الواجهة.','حسابات الدومين والاستضافة وقاعدة البيانات باسم العميل، مع التحقق بخطوتين.','حدّث الحزم وشغّل npm audit قبل التسليم.']},
+  {k:'keys',n:'مفاتيح الخدمات الخارجية',i:['مفاتيح التوصيل والدفع والرسائل تُستعمل في الخادم فقط. كل ما في كود React يراه الزائر.']},
+  {k:'public',n:'النماذج المفتوحة للزوار',i:['حدّ عدد الإرسال من كل عنوان IP، وأضف حقل honeypot أو captcha.','افحص صيغة رقم الهاتف وارفض الطلب المكرر خلال دقائق.']},
+  {k:'auth',n:'تسجيل الدخول',i:['لا تكتب نظام كلمات المرور بنفسك. استعمل مزوّد المصادقة.','حدّ محاولات الدخول المتكررة.','صفحة استرجاع كلمة المرور لا تكشف هل البريد مسجَّل.']},
+  {k:'admin',n:'لوحة الإدارة',i:['مسارات الإدارة تُحمى في الخادم. إخفاء الرابط لا يكفي.']},
+  {k:'roles',n:'الصلاحيات',i:['كل صلاحية تُفحص في الخادم أو بـ RLS. جرّب كل صفحة بحساب بأقل صلاحية.','معرّف المستخدم ودوره يؤخذان من الجلسة في الخادم، لا من الطلب القادم من المتصفح.']},
+  {k:'pay',n:'الدفع الإلكتروني',i:['لا تخزّن بيانات البطاقات. الدفع يتم في صفحة البوابة.','يُعتمد الطلب مدفوعًا بعد وصول webhook والتحقق من توقيعه.','المبلغ يُحسب في الخادم من قاعدة البيانات.']},
+  {k:'money',n:'الحسابات المالية',i:['كل حركة مالية تُسجَّل ولا تُحذف. التصحيح يكون بحركة عكسية.','المبالغ تُخزَّن أعدادًا صحيحة بأصغر وحدة، لا أعدادًا عشرية.','طابق المجاميع مع العميل على بيانات حقيقية قبل الانطلاق.']},
+  {k:'upload',n:'رفع الملفات',i:['افحص نوع الملف وحجمه في الخادم، وخزّنه في خدمة تخزين خارجية.']},
+  {k:'sens',n:'وثائق وبيانات حساسة',i:['ملفات الهوية والصحة في مساحة تخزين خاصة، تُفتح بروابط مؤقتة.','سجّل من فتح كل ملف ومتى.','اتفق كتابيًا مع العميل على مكان التخزين ومن يملك الوصول.']},
+  {k:'pii',n:'بيانات الأشخاص',i:['اجمع أقل ما يلزم، ولا ترسل البيانات لطرف ثالث دون علم العميل.','نبّه العميل إلى القانون 18-07 المعدَّل بالقانون 25-11: تصريح بالمعالجة لدى ANPDP وسياسة خصوصية في الموقع. هذا تنبيه، والتفاصيل عند مختص قانوني.']}
+];
+
+var STATUS=[['draft','مسودة'],['sent','أُرسل العرض'],['won','مقبول'],['lost','مرفوض']];
+var TERMS='30% تسبيق عند الاتفاق، 40% عند تسليم النسخة التجريبية، 30% عند التسليم النهائي.';
+
+var TMAP={};
+TYPES.forEach(function(t){
+  t.base=t.base.split(' ');
+  t.core=t.core.split(' ');
+  t.cats=t.cats.map(function(c){return {n:c[0],items:c[1].split(' ')};});
+  t.all=[];
+  t.cats.forEach(function(c){t.all=t.all.concat(c.items);});
+  TMAP[t.id]=t;
+});
+
+/* ---------- state ---------- */
+
+var TABS=['type','feat','q','tools','sum'];
+var KEY='scope-draft-v2', KEY1='scope-draft-v1';
+var S=null, P=null, open={}, dirty=false;
+var store=null, storeState='wait', saved=[], saving=false, delArm=null, newArm=false, deferred=null;
+var timers={};
+
+var FRAMED=true;
+try{FRAMED=(window.self!==window.top);}catch(e){FRAMED=true;}
+var IN_CLAUDE=FRAMED||!!(window.claude&&typeof window.claude.use==='function');
+document.documentElement.setAttribute('data-env',IN_CLAUDE?'claude':'web');
+
+function $(s,r){return (r||document).querySelector(s);}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function norm(s){return String(s||'').toLowerCase().replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function newId(){return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function fresh(){return {v:2,pid:newId(),client:'',date:today(),type:'shop',selBy:{},ph:{},custom:[],ans:{},asked:{},notes:'',margin:30,price:null,status:'draft',doc:'client',tab:'type'};}
+function freshP(){return {known:{},cal:{},rate:0,cap:5,me:{name:'',phone:'',email:''},terms:TERMS};}
+
+function clean(o){
+  var d=fresh(); o=(o&&typeof o==='object')?o:{};
+  var s={v:2};
+  s.pid=(typeof o.pid==='string'&&/^[A-Za-z0-9_-]{1,60}$/.test(o.pid))?o.pid:d.pid;
+  s.client=typeof o.client==='string'?o.client.slice(0,80):'';
+  s.date=(typeof o.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(o.date))?o.date:d.date;
+  s.type=TMAP[o.type]?o.type:'shop';
+  s.selBy={};
+  if(o.selBy&&typeof o.selBy==='object'){
+    TYPES.forEach(function(t){var a=o.selBy[t.id]; if(Array.isArray(a)) s.selBy[t.id]=t.all.filter(function(id){return a.indexOf(id)>=0;});});
+  }
+  s.ph={};
+  if(o.ph&&typeof o.ph==='object') Object.keys(o.ph).forEach(function(id){if(F[id]&&+o.ph[id]===2) s.ph[id]=2;});
+  s.custom=[];
+  if(Array.isArray(o.custom)){
+    o.custom.slice(0,40).forEach(function(c){
+      c=c||{};
+      var n=String(c.n||'').slice(0,80).trim(); if(!n) return;
+      var a=Math.max(0.25,+c.a||1), b=Math.max(a,+c.b||a), lv=+c.lv;
+      s.custom.push({n:n,lv:(lv===1||lv===2||lv===3)?lv:2,a:Math.min(400,a),b:Math.min(400,b),ph:(+c.ph===2)?2:1});
+    });
+  }
+  s.ans={};
+  if(o.ans&&typeof o.ans==='object') Object.keys(o.ans).slice(0,400).forEach(function(k){if(typeof o.ans[k]==='string'&&o.ans[k]) s.ans[k]=o.ans[k].slice(0,500);});
+  s.asked={};
+  if(o.asked&&typeof o.asked==='object') Object.keys(o.asked).slice(0,400).forEach(function(k){if(o.asked[k]) s.asked[k]=true;});
+  s.notes=typeof o.notes==='string'?o.notes.slice(0,4000):'';
+  s.margin=[0,30,50,100].indexOf(+o.margin)>=0?+o.margin:30;
+  s.price=(typeof o.price==='number'&&o.price>0&&o.price<1e10)?Math.round(o.price):null;
+  s.status=STATUS.some(function(x){return x[0]===o.status;})?o.status:'draft';
+  s.doc=o.doc==='internal'?'internal':'client';
+  s.tab=TABS.indexOf(o.tab)>=0?o.tab:'type';
+  return s;
+}
+function packP(){
+  return {known:Object.keys(P.known).filter(function(k){return P.known[k];}),cal:P.cal,rate:P.rate,cap:P.cap,me:P.me,terms:P.terms};
+}
+function unpackP(o){
+  if(!o||typeof o!=='object') return;
+  var k=o.known;
+  if(Array.isArray(k)){P.known={}; k.forEach(function(x){if(TOOLS[x]) P.known[x]=true;});}
+  else if(k&&typeof k==='object'){P.known={}; Object.keys(k).forEach(function(x){if(TOOLS[x]&&k[x]) P.known[x]=true;});}
+  if(o.cal&&typeof o.cal==='object'){
+    P.cal={};
+    Object.keys(o.cal).forEach(function(id){
+      var c=o.cal[id];
+      if(F[id]&&Array.isArray(c)){var a=+c[0], b=+c[1]; if(a>0&&b>=a&&b<=400) P.cal[id]=[a,b];}
+    });
+  }
+  if(typeof o.rate==='number'&&o.rate>=0&&o.rate<1e7) P.rate=Math.round(o.rate);
+  if(typeof o.cap==='number'&&o.cap>=1&&o.cap<=7) P.cap=Math.round(o.cap);
+  if(o.me&&typeof o.me==='object') ['name','phone','email'].forEach(function(x){if(typeof o.me[x]==='string') P.me[x]=o.me[x].slice(0,80);});
+  if(typeof o.terms==='string'&&o.terms.trim()) P.terms=o.terms.slice(0,400);
+}
+
+/* ---------- derived values ---------- */
+
+function T(){return TMAP[S.type]||TYPES[0];}
+function selArr(){if(!Array.isArray(S.selBy[S.type])) S.selBy[S.type]=T().core.slice(); return S.selBy[S.type];}
+function isSel(id){return selArr().indexOf(id)>=0;}
+function picked(){return T().all.filter(isSel).map(function(id){return F[id];});}
+function phaseOf(id){return S.ph[id]===2?2:1;}
+function dur(x){var c=P.cal[x.id]; return c?{a:c[0],b:c[1]}:{a:x.a,b:x.b};}
+function num(x){return String(Math.round(x*4)/4);}
+function rng(a,b){return a===b?num(a):num(a)+'–'+num(b);}
+function span(a,b){return a===b?num(a):'من '+num(a)+' إلى '+num(b);}
+function unit(b){return b<=2?'يوم':(b<=10?'أيام':'يومًا');}
+function wd(b){return (b>=3&&b<=10)?'أيام عمل':'يوم عمل';}
+function ar(n,one,two,few,many){return n===1?one:(n===2?two:((n>=3&&n<=10)?n+' '+few:n+' '+many));}
+function nfeat(n){return n===0?'لا مميزات':ar(n,'ميزة واحدة','ميزتان','مميزات','ميزة');}
+function mny(n){return String(Math.round(n/1000)*1000).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function weeks(a,b){var c=P.cap||5; return [Math.max(1,Math.ceil(a/c)),Math.max(1,Math.ceil(b/c))];}
+function wkText(w){return w[0]===w[1]?ar(w[0],'أسبوع واحد','أسبوعان','أسابيع','أسبوعًا'):'من '+w[0]+' إلى '+w[1]+(w[1]<=10?' أسابيع':' أسبوعًا');}
+function statusLabel(k){var l='مسودة'; STATUS.forEach(function(x){if(x[0]===k) l=x[1];}); return l;}
+function ref(){return 'N-'+S.date.replace(/-/g,'').slice(2)+'-'+S.pid.slice(-3).toUpperCase();}
+
+function toolList(ph){
+  var why={};
+  function add(k,w){if(!TOOLS[k])return; if(!why[k])why[k]=[]; if(w&&why[k].indexOf(w)<0)why[k].push(w);}
+  T().base.forEach(function(k){add(k,'');});
+  picked().forEach(function(x){
+    if(ph&&phaseOf(x.id)!==ph) return;
+    x.t.forEach(function(k){add(k,x.n);});
+  });
+  return Object.keys(TOOLS).filter(function(k){return why[k];}).map(function(k){
+    return {k:k,g:TOOLS[k].g,n:TOOLS[k].n,d:TOOLS[k].d,why:why[k]};
+  });
+}
+function notKnown(t){return !P.known[t.k];}
+function secList(){
+  var keys={base:true};
+  picked().forEach(function(x){x.s.forEach(function(k){keys[k]=true;});});
+  if(toolList(0).some(function(t){return KEYED.indexOf(t.k)>=0;})) keys.keys=true;
+  return SEC.filter(function(s){return keys[s.k];});
+}
+function totals(){
+  var t={n1:0,n2:0,a1:0,b1:0,a2:0,b2:0,hard:0};
+  picked().forEach(function(x){
+    var d=dur(x);
+    if(phaseOf(x.id)===2){t.n2++; t.a2+=d.a; t.b2+=d.b;}
+    else{t.n1++; t.a1+=d.a; t.b1+=d.b; if(x.lv===3) t.hard++;}
+  });
+  S.custom.forEach(function(c){
+    if(c.ph===2){t.n2++; t.a2+=c.a; t.b2+=c.b;}
+    else{t.n1++; t.a1+=c.a; t.b1+=c.b; if(c.lv===3) t.hard++;}
+  });
+  t.n=t.n1+t.n2;
+  t.b1=Math.ceil(t.b1); t.a1=Math.min(t.b1,Math.round(t.a1));
+  t.b2=Math.ceil(t.b2); t.a2=Math.min(t.b2,Math.round(t.a2));
+  t.tools=toolList(0);
+  t.fresh=t.tools.filter(notKnown);
+  var tl=toolList(1);
+  t.fresh1=tl.filter(notKnown);
+  t.ext=tl.filter(function(x){return KEYED.indexOf(x.k)>=0;}).length;
+  return t;
+}
+function risk(t){
+  var s=t.hard*2+Math.min(8,t.fresh1.length)+t.ext+(t.b1>60?4:(t.b1>30?2:0));
+  var lv=s>=12?3:(s>=6?2:1), why=[];
+  if(t.hard) why.push(ar(t.hard,'ميزة صعبة واحدة','ميزتان صعبتان','مميزات صعبة','ميزة صعبة'));
+  if(t.fresh1.length) why.push(ar(t.fresh1.length,'أداة واحدة جديدة عليك','أداتان جديدتان عليك','أدوات جديدة عليك','أداة جديدة عليك'));
+  if(t.ext) why.push(ar(t.ext,'خدمة خارجية واحدة','خدمتان خارجيتان','خدمات خارجية','خدمة خارجية'));
+  if(t.b1>30) why.push('أكثر من 30 يوم عمل');
+  return {lv:lv,score:s,why:why,label:['','منخفضة','متوسطة','عالية'][lv],
+    advice:['','النطاق في حدود ما تعرفه. التزم بالمدة مع الهامش.','انقل الصعب إلى مرحلة ثانية أو ارفع الهامش قبل أن تلتزم.','لا تلتزم بسعر ثابت لكل شيء. قسّم المشروع وجرّب الأجزاء الصعبة قبل التوقيع.'][lv]};
+}
+function questions(){
+  var out=[];
+  G.forEach(function(q,i){out.push({id:'g'+i,kind:'g',q:q});});
+  T().q.forEach(function(q,i){out.push({id:'t-'+S.type+'-'+i,kind:'t',q:q});});
+  picked().forEach(function(x){x.q.forEach(function(q,i){out.push({id:'f-'+x.id+'-'+i,kind:'f',grp:x.n,q:q});});});
+  return out;
+}
+function answered(q){return !!(S.ans[q.id]||'').trim();}
+function excluded(){return T().all.filter(function(id){return !isSel(id)&&F[id].lv===3;}).map(function(id){return F[id];});}
+function needs(){
+  var out=[];
+  picked().forEach(function(x){if(phaseOf(x.id)===1&&x.c&&out.indexOf(x.c)<0) out.push(x.c);});
+  return out;
+}
+function groupsFor(ph,detail){
+  var gs=[];
+  T().cats.forEach(function(c){
+    var fs=c.items.filter(function(id){return isSel(id)&&phaseOf(id)===ph;}).map(function(id){return F[id];});
+    if(fs.length) gs.push({t:c.n,items:fs.map(function(x){var d=dur(x); return detail?x.n+' ('+LV[x.lv]+'، '+span(d.a,d.b)+' '+unit(d.b)+')':x.n;})});
+  });
+  var cs=S.custom.filter(function(c){return (c.ph===2?2:1)===ph;});
+  if(cs.length) gs.push({t:'طلبات خاصة',items:cs.map(function(c){return detail?c.n+' ('+LV[c.lv]+'، '+span(c.a,c.b)+' '+unit(c.b)+')':c.n;})});
+  return gs;
+}
+
+/* ---------- documents ---------- */
+
+function docClient(){
+  var t=T(), tt=totals(), m=1+S.margin/100;
+  var b=Math.ceil(tt.b1*m), a=Math.min(b,Math.round(tt.a1*m)), w=weeks(a,b);
+  var d={title:'عرض نطاق مشروع',meta:[],sections:[]};
+  d.meta.push(['إلى',S.client.trim()||'غير محدد']);
+  if(P.me.name.trim()) d.meta.push(['من',P.me.name.trim()]);
+  var ct=[P.me.phone.trim(),P.me.email.trim()].filter(Boolean).join(' | ');
+  if(ct) d.meta.push(['للتواصل',ct,1]);
+  d.meta.push(['نوع المشروع',t.n]);
+  d.meta.push(['التاريخ',S.date,1]);
+  d.meta.push(['المرجع',ref(),1]);
+  d.sections.push({h:tt.n2?'ما يشمله العرض: المرحلة الأولى':'ما يشمله العرض',groups:groupsFor(1,false)});
+  if(tt.n2) d.sections.push({h:'المرحلة الثانية',note:'تُنفَّذ بعد تسليم المرحلة الأولى، باتفاق منفصل على مدتها وسعرها.',groups:groupsFor(2,false)});
+  var ex=excluded();
+  if(ex.length) d.sections.push({h:'خارج هذا العرض',note:'هذه العناصر غير مشمولة. إضافتها ممكنة بعرض منفصل.',items:ex.map(function(x){return x.n;})});
+  d.sections.push({h:'ما نحتاجه منكم',items:needs().concat(['شخص واحد مخوَّل بالقرار، يرد على الأسئلة خلال يومي عمل.'])});
+  d.sections.push({h:'المدة',text:'المدة التقديرية '+(tt.n2?'للمرحلة الأولى ':'')+wkText(w)+'، تبدأ من استلام التسبيق والمحتوى المطلوب.'});
+  var pay=[];
+  pay.push(S.price?(tt.n2?'سعر المرحلة الأولى: ':'السعر: ')+mny(S.price)+' دج':'السعر يُحدَّد بعد تأكيد هذا النطاق.');
+  if(P.terms.trim()) pay.push(P.terms.trim());
+  pay.push('كل طلب خارج هذا النطاق يُسعَّر على حدة قبل تنفيذه.');
+  d.sections.push({h:'السعر وشروط الدفع',items:pay});
+  var pend=questions().filter(function(q){return S.asked[q.id]&&!answered(q);});
+  if(pend.length) d.sections.push({h:'نقاط تنتظر جوابكم',items:pend.map(function(q){return q.q;})});
+  return d;
+}
+function docInternal(){
+  var t=T(), tt=totals(), m=1+S.margin/100, r=risk(tt);
+  var b=Math.ceil(tt.b1*m), a=Math.min(b,Math.round(tt.a1*m)), w=weeks(a,b);
+  var d={title:'ملخص داخلي',meta:[],sections:[]};
+  d.meta.push(['العميل',S.client.trim()||'غير محدد']);
+  d.meta.push(['نوع المشروع',t.n]);
+  d.meta.push(['التاريخ',S.date,1]);
+  d.meta.push(['الحالة',statusLabel(S.status)]);
+  d.meta.push(['المرجع',ref(),1]);
+  d.sections.push({h:'مميزات المرحلة الأولى ('+tt.n1+')',groups:groupsFor(1,true)});
+  if(tt.n2) d.sections.push({h:'مميزات المرحلة الثانية ('+tt.n2+')',groups:groupsFor(2,true)});
+  var est=['أيام عمل المرحلة الأولى: '+span(tt.a1,tt.b1)];
+  if(S.margin) est.push('مع هامش '+S.margin+'%: '+span(a,b));
+  est.push('بالأسابيع: '+wkText(w)+' ('+ar(P.cap,'يوم عمل واحد','يوما عمل','أيام عمل','يوم عمل')+' في الأسبوع)');
+  if(P.rate>0) est.push('السعر التقديري: '+(a===b?mny(a*P.rate):'من '+mny(a*P.rate)+' إلى '+mny(b*P.rate))+' دج، بسعر '+mny(P.rate)+' دج لليوم');
+  if(S.price) est.push('السعر المتفق عليه: '+mny(S.price)+' دج');
+  if(tt.n2) est.push('المرحلة الثانية: '+span(tt.a2,tt.b2)+' '+wd(tt.b2)+' قبل الهامش');
+  d.sections.push({h:'المدة والسعر',items:est});
+  d.sections.push({h:'المخاطرة: '+r.label,items:r.why.concat([r.advice])});
+  var warns=picked().filter(function(x){return x.w;});
+  if(warns.length) d.sections.push({h:'تنبيهات قبل الالتزام',items:warns.map(function(x){return x.n+': '+x.w;})});
+  var tools=[];
+  TG.forEach(function(g,gi){
+    var ts=tt.tools.filter(function(x){return x.g===gi;});
+    if(ts.length) tools.push(g+': '+ts.map(function(x){return x.n;}).join('، '));
+  });
+  if(tt.fresh.length) tools.push('أتعلّمها قبل التسعير: '+tt.fresh.map(function(x){return x.n;}).join('، '));
+  d.sections.push({h:'الأدوات',items:tools});
+  var sec=[];
+  secList().forEach(function(s){s.i.forEach(function(i){sec.push(i);});});
+  d.sections.push({h:'الأمان',items:sec});
+  var ex=excluded();
+  if(ex.length) d.sections.push({h:'خارج النطاق',items:ex.map(function(x){return x.n;})});
+  var qs=questions(), done=qs.filter(answered), left=qs.filter(function(q){return !answered(q);});
+  if(done.length) d.sections.push({h:'أجوبة العميل',items:done.map(function(q){return q.q+' الجواب: '+S.ans[q.id].trim();})});
+  if(left.length) d.sections.push({h:'أسئلة مفتوحة',items:left.map(function(q){return q.q;})});
+  if(S.notes.trim()) d.sections.push({h:'ملاحظات',text:S.notes.trim()});
+  return d;
+}
+function curDoc(){return S.doc==='internal'?docInternal():docClient();}
+function toText(d){
+  var L=[d.title];
+  d.meta.forEach(function(m){L.push(m[0]+': '+m[1]);});
+  d.sections.forEach(function(s){
+    L.push(''); L.push(s.h);
+    if(s.note) L.push(s.note);
+    if(s.text) L.push(s.text);
+    if(s.groups) s.groups.forEach(function(g){L.push('['+g.t+']'); g.items.forEach(function(i){L.push('- '+i);});});
+    if(s.items) s.items.forEach(function(i){L.push('- '+i);});
+  });
+  return L.join('\n');
+}
+function toHTML(d){
+  function li(i){return '<li>'+esc(i)+'</li>';}
+  var h='<header class="dochead"><h3>'+esc(d.title)+'</h3><dl>'+d.meta.map(function(m){
+    return '<dt>'+esc(m[0])+'</dt><dd'+(m[2]?' class="ltr"':'')+'>'+esc(m[1])+'</dd>';
+  }).join('')+'</dl></header>';
+  d.sections.forEach(function(s){
+    h+='<section class="docsec"><h4>'+esc(s.h)+'</h4>';
+    if(s.note) h+='<p class="nt">'+esc(s.note)+'</p>';
+    if(s.text) h+='<p>'+esc(s.text)+'</p>';
+    if(s.groups) s.groups.forEach(function(g){h+='<p class="g">'+esc(g.t)+'</p><ul>'+g.items.map(li).join('')+'</ul>';});
+    if(s.items) h+='<ul>'+s.items.map(li).join('')+'</ul>';
+    h+='</section>';
+  });
+  return h;
+}
+
+function check(){
+  var p=[], used={};
+  TYPES.forEach(function(t){
+    t.all.concat(t.core).forEach(function(id){if(!F[id])p.push(t.id+': unknown feature '+id); used[id]=true;});
+    t.core.forEach(function(id){if(t.all.indexOf(id)<0)p.push(t.id+': core not listed '+id);});
+    t.base.forEach(function(k){if(!TOOLS[k])p.push(t.id+': unknown base tool '+k);});
+    t.all.forEach(function(id,i){if(t.all.indexOf(id)!==i)p.push(t.id+': duplicate '+id);});
+    if(!FAM.some(function(x){return x[0]===t.fam;}))p.push(t.id+': unknown family');
+  });
+  var usedTools={};
+  Object.keys(F).forEach(function(id){
+    var x=F[id];
+    x.t.forEach(function(k){if(!TOOLS[k])p.push(id+': unknown tool '+k); usedTools[k]=true;});
+    x.s.forEach(function(k){if(!SEC.some(function(s){return s.k===k;}))p.push(id+': unknown sec '+k);});
+    if(x.a>x.b)p.push(id+': bad range');
+    if(!used[id])p.push('unused feature '+id);
+  });
+  TYPES.forEach(function(t){t.base.forEach(function(k){usedTools[k]=true;});});
+  Object.keys(TOOLS).forEach(function(k){if(!usedTools[k])p.push('unused tool '+k);});
+  KEYED.forEach(function(k){if(!TOOLS[k])p.push('unknown keyed tool '+k);});
+  return p;
+}
+
+/* ---------- rendering ---------- */
+
+function setNum(sel,v){
+  var e=$(sel); if(e.textContent===v) return;
+  e.textContent=v; e.classList.remove('bump'); void e.offsetWidth; e.classList.add('bump');
+}
+function rkHTML(){return '<span class="rkb"><i></i><i></i><i></i></span>';}
+function head(){
+  var t=totals(), r=risk(t), hr=$('#h-r');
+  $('#h-type').textContent=T().n;
+  setNum('#h-n',t.n2?t.n1+' + '+t.n2:String(t.n1));
+  setNum('#h-d',rng(t.a1,t.b1));
+  hr.className='v rk r'+r.lv; hr.innerHTML=rkHTML()+'<span>'+r.label+'</span>';
+  setNum('#h-k',String(t.fresh.length));
+  $('#h-sheet').textContent=(TABS.indexOf(S.tab)+1)+' / '+TABS.length;
+  $('#b-n').textContent=nfeat(t.n);
+  $('#b-d').innerHTML='<span class="ltr">'+rng(t.a1,t.b1)+'</span> '+wd(t.b1)+(t.n2?' في المرحلة الأولى':'');
+}
+function draft(){
+  clearTimeout(timers.draft);
+  timers.draft=setTimeout(function(){try{localStorage.setItem(KEY,JSON.stringify({S:S,P:P}));}catch(e){}},350);
+}
+function touch(){dirty=true; head(); draft();}
+function msg(t){$('#msg').textContent=t;}
+
+function rType(){
+  var h='';
+  FAM.forEach(function(fm){
+    var list=TYPES.filter(function(x){return x.fam===fm[0];});
+    h+='<section class="famsec"><h3 class="fam">'+fm[1]+' <span class="cnt ltr">'+list.length+'</span></h3><div class="types">'+list.map(function(x){
+      return '<button type="button" class="type" data-type="'+x.id+'" data-s="'+esc(norm(x.n+' '+x.en+' '+x.blurb))+'" aria-pressed="'+(x.id===S.type)+'">'+
+        '<span class="n">'+x.n+'</span><span class="e" dir="ltr">'+x.en+'</span>'+
+        '<span class="b">'+x.blurb+'</span><span class="c">'+x.all.length+' ميزة</span></button>';
+    }).join('')+'</div></section>';
+  });
+  $('#types').innerHTML=h;
+  typeFilter(); rSaved();
+}
+function typeFilter(){
+  var q=norm($('#tf').value.trim()), any=false;
+  $$('#types .famsec').forEach(function(sec){
+    var vis=false;
+    $$('.type',sec).forEach(function(b){
+      var ok=!q||b.getAttribute('data-s').indexOf(q)>=0;
+      b.hidden=!ok; if(ok) vis=true;
+    });
+    sec.hidden=!vis; if(vis) any=true;
+  });
+  $('#tempty').hidden=any;
+}
+function rSaved(){
+  var box=$('#saved'), h='';
+  $('#saved-n').textContent=String(saved.length);
+  if(storeState==='wait') h+='<p class="hint">جارٍ الاتصال بالتخزين…</p>';
+  else if(storeState==='slow') h+='<p class="hint">التخزين لا يجيب الآن. قد تكون القائمة غير محدَّثة.</p>';
+  else if(storeState==='local') h+='<p class="hint">'+(IN_CLAUDE?'المشاريع تُحفظ في هذا المتصفح فقط.':'المشاريع تُحفظ على هذا الجهاز. خذ نسخة احتياطية من إعداداتي في لوحة العرض.')+'</p>';
+  if(!saved.length&&storeState!=='wait') h+='<p class="hint">لا مشاريع محفوظة بعد. احفظ مشروعك من لوحة العرض.</p>';
+  h+=saved.map(function(p){
+    var t=TMAP[p.type];
+    return '<div class="srow'+(p.id===S.pid?' cur':'')+'"><div class="sb"><b>'+esc(p.client||'عميل بدون اسم')+'</b>'+
+      '<span>'+esc(t?t.n:'')+' · <span class="ltr">'+esc(p.date||'')+'</span> · '+nfeat(+p.n||0)+' · '+statusLabel(p.status)+'</span></div>'+
+      '<button type="button" class="btn ghost sm" data-open="'+esc(p.id)+'">افتح</button>'+
+      '<button type="button" class="lnk danger" data-del="'+esc(p.id)+'">'+(delArm===p.id?'أكّد الحذف':'احذف')+'</button></div>';
+  }).join('');
+  box.innerHTML=h;
+}
+
+function lvHTML(lv){return '<span class="lv"><i></i><i></i><i></i><span>'+LV[lv]+'</span></span>';}
+function dyHTML(a,b){return '<span class="dy"><span class="ltr">'+rng(a,b)+'</span> '+unit(b)+'</span>';}
+function badgesHTML(x,core){
+  var h='';
+  if(core) h+='<span class="core">أساسي</span>';
+  if(isSel(x.id)&&phaseOf(x.id)===2) h+='<span class="ph2">مرحلة 2</span>';
+  if(P.cal[x.id]) h+='<span class="core">مدتي</span>';
+  return h;
+}
+function detHTML(x){
+  var h='', d=dur(x);
+  if(isSel(x.id)){
+    h+='<div class="seg phs" role="group" aria-label="مرحلة التنفيذ">'+[1,2].map(function(p){
+      return '<button type="button" data-ph="'+p+'" aria-pressed="'+(phaseOf(x.id)===p)+'">'+(p===1?'المرحلة الأولى':'المرحلة الثانية')+'</button>';
+    }).join('')+'</div>';
+  }
+  if(x.w) h+='<p class="w"><b>تنبيه</b>'+x.w+'</p>';
+  if(x.q.length) h+='<div><b>اسأل العميل</b><ul>'+x.q.map(function(q){return '<li>'+q+'</li>';}).join('')+'</ul></div>';
+  if(x.c) h+='<div><b>يلزم من العميل</b><p>'+x.c+'</p></div>';
+  var ts=x.t.filter(function(k){return TOOLS[k];});
+  if(ts.length) h+='<div><b>تحتاج تقنيًا</b><div class="chips">'+ts.map(function(k){return '<span class="chip'+(P.known[k]?'':' new')+'" dir="auto">'+TOOLS[k].n+'</span>';}).join('')+'</div></div>';
+  h+='<div class="cal"><label for="ca-'+x.id+'">مدتي بالأيام</label>'+
+    '<input type="number" class="calin" id="ca-'+x.id+'" data-k="a" min="0.25" max="400" step="0.25" inputmode="decimal" value="'+d.a+'">'+
+    '<span>إلى</span>'+
+    '<input type="number" class="calin" id="cb-'+x.id+'" data-k="b" min="0.25" max="400" step="0.25" inputmode="decimal" value="'+d.b+'" aria-label="أقصى مدة بالأيام">'+
+    '<button type="button" class="lnk" data-calreset="1"'+(P.cal[x.id]?'':' hidden')+'>ارجع للتقدير الأصلي</button></div>';
+  return h;
+}
+function rowHTML(x,core){
+  var on=isSel(x.id), op=!!open[x.id], d=dur(x);
+  return '<div class="row l'+x.lv+(on?' on':'')+'" data-f="'+x.id+'" data-s="'+esc(norm(x.n+' '+x.en))+'">'+
+    '<input type="checkbox" class="cb" id="f-'+x.id+'"'+(on?' checked':'')+'>'+
+    '<label class="nm" for="f-'+x.id+'">'+x.n+' <span class="en" dir="ltr">'+x.en+'</span><span class="bd">'+badgesHTML(x,core)+'</span></label>'+
+    '<div class="meta">'+lvHTML(x.lv)+'<span class="dyw">'+dyHTML(d.a,d.b)+'</span>'+
+    '<button type="button" class="more" aria-expanded="'+op+'" aria-controls="d-'+x.id+'">التفاصيل</button></div>'+
+    '<div class="det" id="d-'+x.id+'"'+(op?'':' hidden')+'>'+(op?detHTML(x):'')+'</div></div>';
+}
+function rFeat(){
+  var t=T(); selArr();
+  var n=$('#tnote'); n.hidden=!t.note; n.textContent=t.note||'';
+  var h=t.cats.map(function(c){
+    return '<section class="cat"><h3>'+c.n+' <span class="cnt ltr">'+c.items.filter(isSel).length+' / '+c.items.length+'</span></h3>'+
+      c.items.map(function(id){return rowHTML(F[id],t.core.indexOf(id)>=0);}).join('')+'</section>';
+  }).join('');
+  if(S.custom.length){
+    h+='<section class="cat"><h3>طلبات خاصة بهذا العميل <span class="cnt ltr">'+S.custom.length+'</span></h3>'+
+      S.custom.map(function(c,i){
+        return '<div class="row l'+c.lv+' on" data-s="'+esc(norm(c.n))+'"><input type="checkbox" class="cb" id="cf-'+i+'" checked disabled aria-label="ميزة مضافة">'+
+          '<div class="nm">'+esc(c.n)+(c.ph===2?'<span class="bd"><span class="ph2">مرحلة 2</span></span>':'')+'</div>'+
+          '<div class="meta">'+lvHTML(c.lv)+dyHTML(c.a,c.b)+
+          '<button type="button" class="more" data-cph="'+i+'">'+(c.ph===2?'أعدها للمرحلة الأولى':'انقلها للمرحلة الثانية')+'</button>'+
+          '<button type="button" class="more" data-rm="'+i+'">احذف</button></div></div>';
+      }).join('')+'</section>';
+  }
+  $('#feats').innerHTML=h;
+  applyFilter();
+}
+function applyFilter(){
+  var q=norm($('#ff').value.trim()), only=$('#fonly').checked, any=false;
+  $$('#feats .cat').forEach(function(cat){
+    var vis=false;
+    $$('.row',cat).forEach(function(r){
+      var ok=(!q||(r.getAttribute('data-s')||'').indexOf(q)>=0)&&(!only||r.classList.contains('on'));
+      r.hidden=!ok; if(ok) vis=true;
+    });
+    cat.hidden=!vis; if(vis) any=true;
+  });
+  $('#fempty').hidden=any;
+}
+function setDet(row,show){
+  var d=$('.det',row), b=$('.more[aria-controls]',row);
+  if(!d||!b) return;
+  var id=row.getAttribute('data-f');
+  d.hidden=!show; b.setAttribute('aria-expanded',String(show));
+  if(show){open[id]=true; d.innerHTML=detHTML(F[id]);}
+  else{delete open[id]; d.innerHTML='';}
+}
+function syncRow(row,keep){
+  var x=F[row.getAttribute('data-f')]; if(!x) return;
+  var d=dur(x), det=$('.det',row);
+  row.classList.toggle('on',isSel(x.id));
+  $('.bd',row).innerHTML=badgesHTML(x,T().core.indexOf(x.id)>=0);
+  $('.dyw',row).innerHTML=dyHTML(d.a,d.b);
+  if(det.hidden) return;
+  if(!keep){det.innerHTML=detHTML(x); return;}
+  var r=$('[data-calreset]',det); if(r) r.hidden=!P.cal[x.id];
+  $('#ca-'+x.id).value=d.a; $('#cb-'+x.id).value=d.b;
+}
+function catCount(row){
+  var cat=row.closest('.cat'); if(!cat) return;
+  $('.cnt',cat).textContent=$$('.row .cb:checked',cat).length+' / '+$$('.row .cb',cat).length;
+}
+function calChange(el){
+  var row=el.closest('.row'), id=row.getAttribute('data-f'), x=F[id];
+  var a=parseFloat($('#ca-'+id).value), b=parseFloat($('#cb-'+id).value);
+  if(!(a>0)) a=x.a;
+  if(!(b>0)) b=x.b;
+  if(b<a){if(el.getAttribute('data-k')==='a') b=a; else a=b;}
+  a=Math.min(400,Math.max(0.25,Math.round(a*4)/4));
+  b=Math.min(400,Math.max(a,Math.round(b*4)/4));
+  if(a===x.a&&b===x.b) delete P.cal[id]; else P.cal[id]=[a,b];
+  syncRow(row,true); head(); draft(); pushProfile();
+}
+
+function qHTML(q){
+  var a=S.ans[q.id]||'', on=!!(S.asked[q.id]||a.trim());
+  return '<div class="qrow'+(on?' on':'')+'" data-q="'+q.id+'">'+
+    '<input type="checkbox" class="cb" id="q-'+q.id+'"'+(on?' checked':'')+' aria-label="طُرح هذا السؤال">'+
+    '<div><label class="qt" for="a-'+q.id+'">'+(q.grp?'<span class="tag">'+q.grp+'</span>':'')+q.q+'</label>'+
+    '<input class="ans" id="a-'+q.id+'" type="text" value="'+esc(a)+'" placeholder="جواب العميل" autocomplete="off" maxlength="500"></div></div>';
+}
+function rQ(){
+  var qs=questions();
+  function sect(title,kind){
+    var list=qs.filter(function(q){return q.kind===kind;});
+    if(!list.length) return '';
+    var n=list.filter(function(q){return S.asked[q.id]||answered(q);}).length;
+    return '<section class="qsec"><h3>'+title+' <span class="cnt ltr">'+n+' / '+list.length+'</span></h3>'+list.map(qHTML).join('')+'</section>';
+  }
+  $('#qs').innerHTML=sect('أسئلة عامة','g')+sect('أسئلة هذا النوع','t')+sect('حسب المميزات المختارة','f');
+  $('#notes').value=S.notes;
+}
+function qCount(row){
+  var sec=row.closest('.qsec'); if(!sec) return;
+  $('.cnt',sec).textContent=$$('.qrow.on',sec).length+' / '+$$('.qrow',sec).length;
+}
+function rTools(){
+  var tl=toolList(0), h='';
+  TG.forEach(function(g,gi){
+    var ts=tl.filter(function(t){return t.g===gi;});
+    if(!ts.length) return;
+    h+='<h3>'+g+' <span class="cnt ltr">'+ts.length+'</span></h3>'+ts.map(function(t){
+      var why=t.why.filter(Boolean);
+      return '<div class="trow'+(P.known[t.k]?'':' new')+'" data-t="'+t.k+'"><div class="th">'+
+        '<div class="tl"><span class="tname" dir="auto">'+t.n+'</span><span class="pill">للتعلّم</span></div>'+
+        '<label class="tog" for="k-'+t.k+'"><input type="checkbox" class="cb sm" id="k-'+t.k+'"'+(P.known[t.k]?' checked':'')+'>أعرفها</label></div>'+
+        '<p class="td">'+t.d+'</p><p class="tw">'+(why.length?'تطلبها: '+why.join('، '):'من أساس هذا النوع')+'</p></div>';
+    }).join('');
+  });
+  $('#tools').innerHTML=h;
+  $('#sec').innerHTML=secList().map(function(s){
+    return '<div class="secg"><h4>'+s.n+'</h4><ul>'+s.i.map(function(i){return '<li>'+i+'</li>';}).join('')+'</ul></div>';
+  }).join('');
+}
+function rEst(){
+  var t=totals(), m=1+S.margin/100, r=risk(t), h='';
+  var b=Math.ceil(t.b1*m), a=Math.min(b,Math.round(t.a1*m)), w=weeks(a,b);
+  h+='<div><span class="k">أيام عمل المرحلة الأولى</span><span class="v ltr">'+rng(a,b)+'</span><span class="u">'+(S.margin?'بهامش '+S.margin+'%':'بلا هامش')+'</span></div>';
+  h+='<div><span class="k">بالأسابيع</span><span class="v ltr">'+rng(w[0],w[1])+'</span><span class="u">'+ar(P.cap,'يوم عمل واحد','يوما عمل','أيام عمل','يوم عمل')+' في الأسبوع</span></div>';
+  h+='<div class="wide"><span class="k">السعر التقديري للمرحلة الأولى</span>'+(P.rate>0?
+    '<span class="v ltr">'+(a===b?mny(a*P.rate):mny(a*P.rate)+' – '+mny(b*P.rate))+'</span><span class="u">دج، بسعر <span class="ltr">'+mny(P.rate)+'</span> ليوم العمل</span>':
+    '<span class="u">أدخل سعر يوم عملك في إعداداتي أسفل الصفحة ليظهر السعر.</span>')+'</div>';
+  if(t.n2) h+='<div class="wide"><span class="k">المرحلة الثانية</span><span class="u">'+nfeat(t.n2)+'، <span class="ltr">'+rng(t.a2,t.b2)+'</span> '+wd(t.b2)+' قبل الهامش</span></div>';
+  h+='<div class="wide r'+r.lv+'"><span class="k">المخاطرة</span><span class="rline">'+rkHTML()+'<b>'+r.label+'</b></span><span class="u">'+(r.why.length?r.why.join('، ')+'. ':'')+r.advice+'</span></div>';
+  $('#estg').innerHTML=h;
+  var tip='';
+  if(t.fresh1.length>=5&&S.margin<50) tip=ar(t.fresh1.length,'','','أدوات جديدة عليك','أداة جديدة عليك')+' في هذا النطاق. هامش 50% على الأقل أقرب للواقع.';
+  $('#mhint').hidden=!tip; $('#mhint').textContent=tip;
+  $('#seg').innerHTML=[0,30,50,100].map(function(v){
+    return '<button type="button" data-m="'+v+'" aria-pressed="'+(S.margin===v)+'"><span class="ltr">'+v+'%</span></button>';
+  }).join('');
+  $('#set-s').textContent=P.rate>0?mny(P.rate)+' دج لليوم':'';
+}
+function rDoc(){
+  $('#doc').innerHTML=toHTML(curDoc());
+  $$('#docseg button').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-doc')===S.doc));});
+  $('#copybuf').hidden=true;
+}
+function rSum(){
+  $('#price').value=S.price||'';
+  $('#status').innerHTML=STATUS.map(function(x){return '<option value="'+x[0]+'"'+(x[0]===S.status?' selected':'')+'>'+x[1]+'</option>';}).join('');
+  $('#me-n').value=P.me.name; $('#me-p').value=P.me.phone; $('#me-e').value=P.me.email;
+  $('#rate').value=P.rate||''; $('#cap').value=P.cap; $('#terms').value=P.terms;
+  rEst(); rDoc();
+}
+
+var RENDER={type:rType,feat:rFeat,q:rQ,tools:rTools,sum:rSum};
+function go(tab,first){
+  if(TABS.indexOf(tab)<0) tab='type';
+  S.tab=tab;
+  TABS.forEach(function(t){
+    $('#p-'+t).hidden=(t!==tab);
+    var b=$('#s-'+t);
+    if(t===tab) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current');
+  });
+  RENDER[tab]();
+  head();
+  $('#prev').hidden=(tab===TABS[0]);
+  $('#next').hidden=(tab===TABS[TABS.length-1]);
+  if(!first){
+    var y=$('.steps').getBoundingClientRect().top+window.scrollY;
+    if(window.scrollY>y) window.scrollTo(0,y);
+    draft();
+  }
+}
+function syncInputs(){$('#client').value=S.client; $('#date').value=S.date;}
+function refresh(){RENDER[S.tab](); head();}
+
+/* ---------- storage ---------- */
+
+function localStoreMake(){
+  var KP='scope-projects-v2', KF='scope-profile-v2', cb=null;
+  function read(){try{var j=JSON.parse(localStorage.getItem(KP)||'{}'); return (j&&typeof j==='object'&&!Array.isArray(j))?j:{};}catch(e){return {};}}
+  function write(o){try{localStorage.setItem(KP,JSON.stringify(o)); return true;}catch(e){return false;}}
+  function list(){
+    var o=read();
+    return Object.keys(o).map(function(id){var p=o[id]||{}; p.id=id; return p;}).sort(function(x,y){return String(y.updated||'').localeCompare(String(x.updated||''));});
+  }
+  return {
+    kind:'local',
+    watch:function(fn){cb=fn; fn(list(),true);},
+    save:function(id,body){var o=read(); o[id]=body; if(!write(o)) return Promise.reject({code:'quota_exceeded'}); if(cb) cb(list(),true); return Promise.resolve();},
+    remove:function(id){var o=read(); delete o[id]; write(o); if(cb) cb(list(),true); return Promise.resolve();},
+    profile:function(){try{return Promise.resolve(JSON.parse(localStorage.getItem(KF)||'null'));}catch(e){return Promise.resolve(null);}},
+    saveProfile:function(p){try{localStorage.setItem(KF,JSON.stringify(p));}catch(e){} return Promise.resolve();},
+    dump:function(){return read();},
+    merge:function(o){var cur=read(); Object.keys(o||{}).forEach(function(k){if(/^[A-Za-z0-9_-]{1,60}$/.test(k)&&o[k]&&typeof o[k]==='object') cur[k]=o[k];}); write(cur); if(cb) cb(list(),true);}
+  };
+}
+function cloudStoreMake(db,uid){
+  var prof=db.doc('data/users/'+uid+'/profile'), proj=prof.collection('projects');
+  return {
+    kind:'cloud',
+    watch:function(fn,err){
+      proj.orderBy('updated','desc').limit(200).onSnapshot(function(snap){
+        fn(snap.docs.map(function(x){var o=JSON.parse(JSON.stringify(x.data()||{})); o.id=x.id; return o;}),!snap.metadata||!snap.metadata.fromCache);
+      },err);
+    },
+    save:function(id,body){return proj.doc(id).set(body);},
+    remove:function(id){return proj.doc(id).delete();},
+    profile:function(){return prof.get().then(function(s){return (s&&s.exists)?(s.data()||{}):null;});},
+    saveProfile:function(p){return prof.set(p);}
+  };
+}
+function attach(){
+  store.watch(function(list,confirmed){
+    saved=list;
+    if(store.kind==='cloud'&&confirmed){clearTimeout(timers.load); storeState='cloud';}
+    rSaved();
+  },function(){clearTimeout(timers.load); useLocal();});
+  store.profile().then(function(o){
+    if(!o) return;
+    unpackP(o); draft(); refresh();
+  }).catch(function(){});
+  if(S.tab==='sum') rSum();
+}
+function useLocal(){store=localStoreMake(); storeState='local'; attach();}
+function connect(){
+  var c=window.claude;
+  if(!c||typeof c.use!=='function'){useLocal(); return;}
+  Promise.all([c.use('db'),c.use('user')]).then(function(r){
+    if(!r[0]||!r[1]) return useLocal();
+    return r[1].id().then(function(uid){
+      if(!uid) return useLocal();
+      store=cloudStoreMake(r[0],uid); storeState='wait';
+      timers.load=setTimeout(function(){if(storeState==='wait'){storeState='slow'; rSaved();}},10000);
+      attach();
+    });
+  }).catch(function(){useLocal();});
+}
+function pushProfile(){
+  if(!store) return;
+  clearTimeout(timers.prof);
+  timers.prof=setTimeout(function(){
+    if(timers.pbusy){timers.pagain=true; return;}
+    timers.pbusy=true;
+    var done=function(){timers.pbusy=false; if(timers.pagain){timers.pagain=false; pushProfile();}};
+    try{store.saveProfile(JSON.parse(JSON.stringify(packP()))).then(done,done);}catch(e){done();}
+  },1200);
+}
+function save(){
+  if(!store){msg('التخزين لم يجهز بعد. حاول بعد لحظات.'); return;}
+  if(saving) return;
+  saving=true; msg('جارٍ الحفظ…');
+  var t=totals();
+  var body=JSON.parse(JSON.stringify({v:2,client:S.client,date:S.date,type:S.type,selBy:S.selBy,ph:S.ph,custom:S.custom,ans:S.ans,asked:S.asked,notes:S.notes,margin:S.margin,price:S.price,status:S.status,doc:S.doc,n:t.n,a:t.a1,b:t.b1,updated:new Date().toISOString()}));
+  var end=function(){saving=false;};
+  store.save(S.pid,body).then(function(){
+    dirty=false; msg(store.kind==='cloud'?'حُفظ المشروع في حسابك. تجده في لوحة النوع تحت مشاريعي المحفوظة.':'حُفظ المشروع على هذا الجهاز. تجده في لوحة النوع تحت مشاريعي المحفوظة.');
+  },function(e){
+    msg(e&&e.code==='quota_exceeded'?'امتلأ التخزين. احذف مشاريع قديمة ثم احفظ من جديد.':'لم يُحفظ المشروع. انسخ النص حتى لا يضيع، ثم حاول مرة أخرى.');
+  }).then(end,end);
+}
+function openSaved(id){
+  var p=null; saved.forEach(function(x){if(x.id===id) p=x;});
+  if(!p) return;
+  var o=JSON.parse(JSON.stringify(p)); o.pid=id; o.tab='feat';
+  S=clean(o); open={}; dirty=false;
+  syncInputs(); go('feat');
+}
+function delSaved(id){
+  if(!store) return;
+  if(delArm!==id){
+    delArm=id; rSaved();
+    clearTimeout(timers.del);
+    timers.del=setTimeout(function(){delArm=null; rSaved();},4000);
+    return;
+  }
+  delArm=null; clearTimeout(timers.del);
+  store.remove(id).catch(function(){});
+}
+function newProject(){
+  var b=$('#newp');
+  if(dirty&&!newArm){
+    newArm=true; b.textContent='المشروع الحالي غير محفوظ. اضغط مرة ثانية للبدء';
+    clearTimeout(timers.np);
+    timers.np=setTimeout(function(){newArm=false; b.textContent='مشروع جديد';},4000);
+    return;
+  }
+  newArm=false; clearTimeout(timers.np); b.textContent='مشروع جديد';
+  S=fresh(); open={}; dirty=false;
+  syncInputs(); go('type'); window.scrollTo(0,0);
+}
+
+/* ---------- phone app shell (outside Claude only) ---------- */
+
+function appShell(){
+  if(IN_CLAUDE) return;
+  var standalone=false;
+  try{standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;}catch(e){}
+  if('serviceWorker' in navigator&&location.protocol==='https:'){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  }
+  if(standalone) return;
+  var bar=$('#appbar'), txt=$('#app-t'), btn=$('#install');
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent||'');
+  if(ios){
+    bar.hidden=false;
+    txt.textContent='للتثبيت على iPhone: افتح الصفحة في Safari، اضغط زر المشاركة، ثم إضافة إلى الشاشة الرئيسية.';
+  }
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault(); deferred=e;
+    bar.hidden=false; btn.hidden=false;
+    txt.textContent='ثبّت الأداة تطبيقًا على هاتفك. تعمل بعدها بدون إنترنت.';
+  });
+  btn.addEventListener('click',function(){
+    if(!deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function(){deferred=null; bar.hidden=true;},function(){});
+  });
+  window.addEventListener('appinstalled',function(){bar.hidden=true;});
+}
+function backupExport(){
+  var data={app:'scope',v:2,when:new Date().toISOString(),profile:packP(),projects:(store&&store.dump)?store.dump():{}};
+  try{
+    var url=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:'application/json'}));
+    var a=document.createElement('a'); a.href=url; a.download='scope-backup-'+today()+'.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url);},2000);
+    msg('نُزّل ملف النسخة الاحتياطية.');
+  }catch(e){msg('تعذّر تنزيل النسخة الاحتياطية في هذا المتصفح.');}
+}
+function backupImport(file){
+  if(!file) return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var j=JSON.parse(String(rd.result||''));
+      if(!j||j.app!=='scope') throw new Error('bad');
+      if(j.profile){unpackP(j.profile); pushProfile();}
+      if(store&&store.merge&&j.projects) store.merge(j.projects);
+      draft(); refresh(); msg('استُرجعت النسخة الاحتياطية.');
+    }catch(e){msg('الملف ليس نسخة احتياطية من هذه الأداة.');}
+  };
+  rd.onerror=function(){msg('تعذّرت قراءة الملف.');};
+  rd.readAsText(file);
+}
+
+/* ---------- events ---------- */
+
+function bind(){
+  $('.steps').addEventListener('click',function(e){var b=e.target.closest('[data-go]'); if(b) go(b.getAttribute('data-go'));});
+  $('#prev').addEventListener('click',function(){go(TABS[Math.max(0,TABS.indexOf(S.tab)-1)]);});
+  $('#next').addEventListener('click',function(){go(TABS[Math.min(TABS.length-1,TABS.indexOf(S.tab)+1)]);});
+  $('#client').addEventListener('input',function(e){S.client=e.target.value; dirty=true; draft(); if(S.tab==='sum') rDoc();});
+  $('#date').addEventListener('change',function(e){if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){S.date=e.target.value; dirty=true; draft(); if(S.tab==='sum') rDoc();}});
+
+  $('#tf').addEventListener('input',typeFilter);
+  $('#p-type').addEventListener('click',function(e){
+    var t=e.target.closest('[data-type]'), o=e.target.closest('[data-open]'), d=e.target.closest('[data-del]');
+    if(t){
+      var id=t.getAttribute('data-type');
+      if(TMAP[id]&&id!==S.type){
+        S.type=id; selArr(); open={};
+        $$('#types .type').forEach(function(b){b.setAttribute('aria-pressed',String(b===t));});
+        touch();
+      }
+    }
+    else if(o) openSaved(o.getAttribute('data-open'));
+    else if(d) delSaved(d.getAttribute('data-del'));
+    else if(e.target.closest('#newp')) newProject();
+  });
+
+  $('#p-feat').addEventListener('input',function(e){if(e.target.id==='ff') applyFilter();});
+  $('#p-feat').addEventListener('change',function(e){
+    var el=e.target;
+    if(el.id==='fonly'){applyFilter(); return;}
+    if(el.classList.contains('calin')){calChange(el); return;}
+    if(!el.classList.contains('cb')||el.id.indexOf('f-')!==0) return;
+    var id=el.id.slice(2), arr=selArr(), i=arr.indexOf(id), row=el.closest('.row');
+    if(el.checked&&i<0) arr.push(id);
+    if(!el.checked&&i>=0){arr.splice(i,1); delete S.ph[id];}
+    if(el.checked) setDet(row,true);
+    syncRow(row); catCount(row); touch();
+    if($('#fonly').checked) applyFilter();
+  });
+  $('#p-feat').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b||b.type==='submit') return;
+    var row=b.closest('.row'), id=row?row.getAttribute('data-f'):null;
+    if(b.hasAttribute('data-rm')){S.custom.splice(+b.getAttribute('data-rm'),1); rFeat(); touch(); return;}
+    if(b.hasAttribute('data-cph')){
+      var c=S.custom[+b.getAttribute('data-cph')];
+      if(c){c.ph=(c.ph===2)?1:2; rFeat(); touch();}
+      return;
+    }
+    if(b.hasAttribute('data-ph')&&id){
+      var p=+b.getAttribute('data-ph');
+      if(p===2) S.ph[id]=2; else delete S.ph[id];
+      syncRow(row);
+      var nb=$('[data-ph="'+p+'"]',row); if(nb) nb.focus();
+      touch(); return;
+    }
+    if(b.hasAttribute('data-calreset')&&id){
+      delete P.cal[id]; syncRow(row,true); head(); draft(); pushProfile(); return;
+    }
+    if(b.classList.contains('more')&&id) setDet(row,$('.det',row).hidden);
+  });
+  $('#cform').addEventListener('submit',function(e){
+    e.preventDefault();
+    var n=$('#c-n').value.trim(), m=$('#cmsg');
+    if(!n){m.hidden=false; m.textContent='اكتب اسم الميزة أولًا.'; $('#c-n').focus(); return;}
+    var a=Math.max(0.25,parseFloat($('#c-a').value)||1), b=Math.max(a,parseFloat($('#c-b').value)||a);
+    S.custom.push({n:n.slice(0,80),lv:+$('#c-lv').value||2,a:Math.min(400,a),b:Math.min(400,b),ph:1});
+    $('#c-n').value=''; m.hidden=false; m.textContent='أُضيفت الميزة إلى قسم الطلبات الخاصة.';
+    rFeat(); touch();
+  });
+
+  $('#p-q').addEventListener('input',function(e){
+    var el=e.target;
+    if(el.id==='notes'){S.notes=el.value; dirty=true; draft(); return;}
+    if(!el.classList.contains('ans')) return;
+    var row=el.closest('.qrow'), id=row.getAttribute('data-q'), v=el.value;
+    if(v) S.ans[id]=v; else delete S.ans[id];
+    if(v.trim()){S.asked[id]=true; $('.cb',row).checked=true; row.classList.add('on');}
+    dirty=true; draft(); qCount(row);
+  });
+  $('#p-q').addEventListener('change',function(e){
+    var cb=e.target;
+    if(!cb.classList.contains('cb')) return;
+    var row=cb.closest('.qrow'), id=row.getAttribute('data-q');
+    if(cb.checked) S.asked[id]=true; else delete S.asked[id];
+    row.classList.toggle('on',cb.checked||!!(S.ans[id]||'').trim());
+    dirty=true; draft(); qCount(row);
+  });
+
+  $('#p-tools').addEventListener('change',function(e){
+    var cb=e.target;
+    if(!cb.classList.contains('cb')||cb.id.indexOf('k-')!==0) return;
+    var k=cb.id.slice(2);
+    if(cb.checked) P.known[k]=true; else delete P.known[k];
+    cb.closest('.trow').classList.toggle('new',!cb.checked);
+    head(); draft(); pushProfile();
+  });
+
+  $('#seg').addEventListener('click',function(e){
+    var b=e.target.closest('[data-m]'); if(!b) return;
+    S.margin=+b.getAttribute('data-m'); dirty=true; rEst(); rDoc(); draft();
+    var nb=$('#seg [data-m="'+S.margin+'"]'); if(nb) nb.focus();
+  });
+  $('#docseg').addEventListener('click',function(e){
+    var b=e.target.closest('[data-doc]'); if(!b) return;
+    S.doc=b.getAttribute('data-doc')==='internal'?'internal':'client'; rDoc(); draft();
+  });
+  $('#price').addEventListener('input',function(e){
+    var v=parseFloat(e.target.value);
+    S.price=(v>0&&v<1e10)?Math.round(v):null; dirty=true; rDoc(); draft();
+  });
+  $('#status').addEventListener('change',function(e){S.status=e.target.value; dirty=true; rDoc(); draft();});
+  $('#setbox').addEventListener('input',function(e){
+    var el=e.target, v=el.value;
+    if(el.id==='me-n') P.me.name=v.slice(0,80);
+    else if(el.id==='me-p') P.me.phone=v.slice(0,30);
+    else if(el.id==='me-e') P.me.email=v.slice(0,80);
+    else if(el.id==='terms') P.terms=v.slice(0,400);
+    else if(el.id==='rate'){var r=parseFloat(v); P.rate=(r>0&&r<1e7)?Math.round(r):0;}
+    else if(el.id==='cap'){var c=parseInt(v,10); P.cap=(c>=1&&c<=7)?c:5;}
+    else return;
+    rEst(); rDoc(); draft(); pushProfile();
+  });
+  $('#copy').addEventListener('click',function(){
+    var txt=toText(curDoc()), buf=$('#copybuf');
+    function manual(){buf.hidden=false; buf.value=txt; buf.focus(); buf.select(); msg('تعذّر النسخ التلقائي. النص في الخانة أدناه محدَّد، انسخه يدويًا.');}
+    try{
+      navigator.clipboard.writeText(txt).then(function(){msg(S.doc==='internal'?'نُسخ الملخص الداخلي.':'نُسخ عرض العميل. راجعه ثم أرسله.');},manual);
+    }catch(err){manual();}
+  });
+  $('#print').addEventListener('click',function(){try{window.print();}catch(e){msg('الطباعة غير متاحة في هذا المتصفح.');}});
+  $('#save').addEventListener('click',save);
+  $('#exp').addEventListener('click',backupExport);
+  $('#imp').addEventListener('change',function(e){backupImport(e.target.files&&e.target.files[0]); e.target.value='';});
+}
+
+/* ---------- start ---------- */
+
+function start(snap){
+  var src=null, j;
+  if(snap&&snap.S&&(snap.S.v===2||snap.S.v===1)) src=snap;
+  else{
+    try{j=JSON.parse(localStorage.getItem(KEY)||'null'); if(j&&j.S) src=j;}catch(e){}
+    if(!src){try{j=JSON.parse(localStorage.getItem(KEY1)||'null'); if(j&&j.S) src=j;}catch(e2){}}
+  }
+  P=freshP();
+  S=clean(src?src.S:null);
+  if(src&&src.P) unpackP(src.P);
+  else if(src&&src.known) unpackP({known:src.known});
+  bind(); syncInputs(); go(S.tab,true); connect(); appShell();
+}
+
+window.__scope={check:check,go:go,text:function(){return toText(curDoc());},state:function(){return S;},profile:function(){return P;},refresh:refresh};
+
+var hot=window.claude&&window.claude.hot;
+try{if(hot&&hot.snapshot) hot.snapshot(function(){return {S:S,P:P};});}catch(e){}
+if(hot&&hot.ready) hot.ready(start); else start((hot&&hot.data)||{});
+
+})();
+</script>
+</body>
+</html>
